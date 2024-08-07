@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "DOK",
+            "request": "launch",
+            "type": "al",
+            "environmentType": "Sandbox",
+            "server": "http://dok",
+            "serverInstance": "BC",
+            "authentication": "UserPassword",
+            "breakOnError": "All",
+            "launchBrowser": true,
+            "enableLongRunningSqlStatements": true,
+            "enableSqlInformationDebugger": true,
+            "schemaUpdateMode": "ForceSync",
+            "tenant": "default",
+            "usePublicURLFromServer": true
+        }
+    ]
+}
