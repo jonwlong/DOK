@@ -11,6 +11,8 @@
             "authentication": "UserPassword",
             "breakOnError": "All",
             "launchBrowser": true,
+            "startupObjectType": "Page",
+            "startupObjectId": 130451,
             "enableLongRunningSqlStatements": true,
             "enableSqlInformationDebugger": true,
             "schemaUpdateMode": "ForceSync",
