@@ -87,6 +87,23 @@ codeunit 50000 "Test Tinker"
         TestHelpers.AssertTrue(boo, 'This is a test with %1 and %2 and %3 and %4 and %5', '1', '2', '3', '4', '5');
     end;
 
+    [Test]
+    procedure "Test_TestPage"()
+    var
+        CustomerPage: TestPage "Customer Card";
+        Customer: Record Customer;
+    begin
+        Customer.FindFirst();
+        CustomerPage.OpenEdit();
+        CustomerPage.GoToRecord(Customer);
+        CustomerPage."Credit Limit (LCY)".SetValue(0);
+        Customerpage.next();
+
+        // [GIVEN] Given Some State 
+        // [WHEN] When Some Action 
+        // [THEN] Then Expected Output 
+    end;
+
 
 
     var
