@@ -68,6 +68,48 @@ codeunit 50001 "Test Sales Orders"
             until SalesInvoiceLine.NEXT = 0;
     end;
 
+    [Test]
+    procedure "Test_CalculateFreightOnRelease1Line"()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        ReleaseSalesDoc: Codeunit "Release Sales Document";
+    begin
+        // [GIVEN] A Sales Order with 1 Sales Line
+        SalesHeader := TestFixturesSales.CreateSalesOrder();
+        TestFixturesSales.CreateSalesLines(SalesHeader, 1);
+
+        // [WHEN] When we release the order
+        ReleaseSalesDoc.Run(SalesHeader);
+
+        // [THEN] The Sales Header contains a Freight line 
+        TestHelpers.AssertTrue(SalesLine.GET(SalesLine."Document Type"::Order, SalesHeader."No.", 999999), 'Freight Sales Line not found');
+        // [THEN] The Freight line has a Quantity > 0
+        TestHelpers.AssertTrue(SalesLine.Quantity > 0, 'Freight Quantity is not greater than 0');
+
+    end;
+
+    [Test]
+    procedure "Test_CalculateFreightOnRelease10Lines"()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        ReleaseSalesDoc: Codeunit "Release Sales Document";
+    begin
+        // [GIVEN] A Sales Order with 1 Sales Line
+        SalesHeader := TestFixturesSales.CreateSalesOrder();
+        TestFixturesSales.CreateSalesLines(SalesHeader, 10);
+
+        // [WHEN] When we release the order
+        ReleaseSalesDoc.Run(SalesHeader);
+
+        // [THEN] The Sales Header contains a Freight line 
+        TestHelpers.AssertTrue(SalesLine.GET(SalesLine."Document Type"::Order, SalesHeader."No.", 999999), 'Freight Sales Line not found');
+        // [THEN] The Freight line has a Quantity > 0
+        TestHelpers.AssertTrue(SalesLine.Quantity > 0, 'Freight Quantity is not greater than 0');
+
+    end;
+
     var
         TestHelpers: Codeunit "DOK Test Helpers";
         TestFixturesSales: Codeunit "DOK Test Fixtures Sales";
