@@ -21,7 +21,7 @@ codeunit 50003 "DOK Test Fixtures Sales"
         SalesLine.Validate(Type, SalesLine.Type::Item);
         SalesLine.Validate("No.", GetRandomItem()."No.");
         SalesLine.Validate(Quantity, Random(100));
-        SalesLine."Line No." := SalesHeader.Count + 10000;
+        SalesLine."Line No." := SalesLine.Count + 10000;
         if SalesLine.Quantity = 0 then
             SalesLine.Validate(Quantity, 1);
         EXIT(SalesLine);
