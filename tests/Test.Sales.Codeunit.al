@@ -110,6 +110,55 @@ codeunit 50001 "Test Sales Orders"
 
     end;
 
+    [Test]
+    procedure Test_CreateMSTOrderUpdatesRelatedOrderLineQuantity2MSTs()
+    var
+        SalesHeader: Record "Sales Header";
+        MST: Record "DOK Multiple Ship-to Orders";
+        SalesLine: Record "Sales Line";
+    begin
+        // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
+        SalesHeader := TestFixturesSales.CreateSalesOrder();
+        TestFixturesSales.CreateSalesLines(SalesHeader, 1);
+
+        // [WHEN] we add 2 MSTs
+        TestFixturesSales.ImportMSTOrders(SalesHeader, 2);
+
+        // [THEN] The quantity on the Sales Order line is updated to reflect the total quantity of the MSTs
+        SalesLine.Get(SalesLine."Document Type"::Order, SalesHeader."No.", 10000);
+        MST.SetRange("Order No.", SalesHeader."No.");
+        MST.SetRange("Line No.", 10000);
+        MST.CALCSUMS("Quantity");
+        TestHelpers.AssertTrue(SalesLine."Quantity" = MST.Quantity, 'Total Quantity is not %1, It''s %2', SalesLine."Quantity", MST.Quantity);
+    end;
+
+    [Test]
+    procedure Test_CreateMSTOrderUpdatesRelatedOrderLineQuantity8MSTs()
+    var
+        SalesHeader: Record "Sales Header";
+        MST: Record "DOK Multiple Ship-to Orders";
+        SalesLine: Record "Sales Line";
+    begin
+        // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
+        SalesHeader := TestFixturesSales.CreateSalesOrder();
+        TestFixturesSales.CreateSalesLines(SalesHeader, 2);
+
+        // [WHEN] we add 4 MSTs to each line
+        TestFixturesSales.ImportMSTOrders(SalesHeader, 4);
+
+        // [THEN] The quantity on the Sales Order lines is updated to reflect the total quantity of the MSTs
+        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SETRANGE(Type, SalesLine.Type::Item);
+        if SalesLine.FINDSET then
+            repeat
+                MST.SetRange("Order No.", SalesHeader."No.");
+                MST.SetRange("Line No.", SalesLine."Line No.");
+                MST.CALCSUMS("Quantity");
+                TestHelpers.AssertTrue(SalesLine."Quantity" = MST.Quantity, 'Total Quantity is not %1, It''s %2', MST.Quantity, SalesLine."Quantity");
+            until SalesLine.NEXT = 0;
+    end;
+
     var
         TestHelpers: Codeunit "DOK Test Helpers";
         TestFixturesSales: Codeunit "DOK Test Fixtures Sales";
