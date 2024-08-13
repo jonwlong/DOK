@@ -56,8 +56,4 @@ codeunit 50002 "DOK Test Helpers"
             Error((StrSubstNo(errorMessage, Arg1, Arg2, Arg3, Arg4, Arg5)));
     end;
 
-    procedure GetRandomString(Length: Integer): Text
-    begin
-        exit(CopyStr(DelChr(Format(CreateGuid()), '=', '{}-'), 1, Length));
-    end;
 }

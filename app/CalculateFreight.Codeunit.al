@@ -20,18 +20,21 @@ codeunit 50006 "DOK Freight Management"
     procedure AddFreightLine(SalesHeader: Record "Sales Header"; FreightAmount: Decimal)
     var
         SalesLine: Record "Sales Line";
+        Setup: Record "DOK Setup";
     begin
         // Add a Resource line to the Sales Order with line no 999999
+        Setup.Get();
         SalesLine.INIT;
-        SalesLine."Document Type" := SalesLine."Document Type"::Order;
-        SalesLine."Document No." := SalesHeader."No.";
-        SalesLine."Line No." := 999999;
-        SalesLine."Type" := SalesLine."Type"::Resource;
-        SalesLine."No." := 'FREIGHT';
-        SalesLine."Description" := 'Freight';
-        SalesLine."Quantity" := 1;
-        SalesLine."Unit Price" := FreightAmount;
-        SalesLine."Unit Cost" := 0;
+        SalesLine.Validate("Document Type", SalesLine."Document Type"::Order);
+        SalesLine.Validate("Document No.", SalesHeader."No.");
+        SalesLine.Validate("Line No.", 999999);
+        SalesLine.Validate("Type", SalesLine."Type"::Resource);
+        SalesLine.Validate("No.", Setup."Freight No.");
+        SalesLine.Validate("Description", 'Freight');
+        SalesLine.Validate("Quantity", 1);
+        SalesLine.Validate("Unit Price", FreightAmount);
+        SalesLine.Validate("Unit Cost", 0);
+        SalesLine."Tax Group Code" := 'VAT';
         SalesLine.Insert(true);
     end;
 

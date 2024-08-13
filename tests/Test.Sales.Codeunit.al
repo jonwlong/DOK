@@ -3,6 +3,45 @@ codeunit 50001 "Test Sales Orders"
     Subtype = Test;
 
     [Test]
+    procedure Test_PostSalesOrder()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        SalesPost: Codeunit "Sales-Post";
+        PostedWithoutErrors: Boolean;
+        Resource: Record Resource;
+        Setup: Record "DOK Setup";
+        TaxGroup: Record "Tax Group";
+        FreightCode: Code[20];
+    begin
+        //[SETUP] Create a Resource for the Freight line
+        FreightCode := TestHelpersUtilities.GetRandomString(20);
+        if not Setup.Get() then begin
+            Setup.Init();
+            Setup."Freight No." := FreightCode;
+            Setup.Insert();
+        end else begin
+            Setup."Freight No." := FreightCode;
+            Setup.Modify(TRUE)
+        end;
+        TestHelpersUtilities.CreateResource(Resource, FreightCode);
+
+        // [GIVEN] a Sales Order with 1 Sales Line
+        SalesHeader := TestFixturesSales.CreateSalesOrder();
+        TestFixturesSales.CreateSalesLines(SalesHeader, 1);
+        SalesHeader.Ship := TRUE;
+        SalesHeader.Invoice := TRUE;
+        SalesHeader.Modify(TRUE);
+
+        // [WHEN] we post the Sales Order
+        SalesPost.Run(SalesHeader);
+        PostedWithoutErrors := GetLastErrorText() = '';
+
+        // [THEN] the Sales Order is posted without errors
+        TestHelpers.AssertTrue(PostedWithoutErrors, 'Sales Order was not posted without error %1', GetLastErrorText());
+    end;
+
+    [Test]
     procedure Test_OriginalQuantityIsPopulatedOnNewLines()
     var
         SalesHeader: Record "Sales Header";
@@ -204,10 +243,27 @@ codeunit 50001 "Test Sales Orders"
         SalesHeader: Record "Sales Header";
         MST: Record "DOK Multiple Ship-to Orders";
         SalesLine: Record "Sales Line";
+        Resource: Record Resource;
+        Setup: Record "DOK Setup";
         MSTOrderNo: Code[20];
+        FreightCode: Code[20];
         SalesPost: Codeunit "Sales-Post";
         QtyOnOrderLinesCreatedFromMSTOrders: Decimal;
     begin
+
+        // [SETUP] Create a Resource for the Freight line
+        //[SETUP] Create a Resource for the Freight line
+        FreightCode := TestHelpersUtilities.GetRandomString(20);
+        if not Setup.Get() then begin
+            Setup.Init();
+            Setup."Freight No." := FreightCode;
+            Setup.Insert();
+        end else begin
+            Setup."Freight No." := FreightCode;
+            Setup.Modify(TRUE)
+        end;
+        TestHelpersUtilities.CreateResource(Resource, FreightCode);
+
         // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
         SalesHeader := TestFixturesSales.CreateSalesOrder();
         TestFixturesSales.CreateSalesLines(SalesHeader, 1);
@@ -222,9 +278,92 @@ codeunit 50001 "Test Sales Orders"
 
     end;
 
+    [Test]
+    procedure Test_PostOrdersCreatedFrom2Lines8MSTs()
+    var
+        SalesHeader: Record "Sales Header";
+        MST: Record "DOK Multiple Ship-to Orders";
+        SalesLine: Record "Sales Line";
+        Resource: Record Resource;
+        Setup: Record "DOK Setup";
+        MSTOrderNo: Code[20];
+        FreightCode: Code[20];
+        SalesPost: Codeunit "Sales-Post";
+        QtyOnOrderLinesCreatedFromMSTOrders: Decimal;
+    begin
+
+        // [SETUP] Create a Resource for the Freight line
+        //[SETUP] Create a Resource for the Freight line
+        FreightCode := TestHelpersUtilities.GetRandomString(20);
+        if not Setup.Get() then begin
+            Setup.Init();
+            Setup."Freight No." := FreightCode;
+            Setup.Insert();
+        end else begin
+            Setup."Freight No." := FreightCode;
+            Setup.Modify(TRUE)
+        end;
+        TestHelpersUtilities.CreateResource(Resource, FreightCode);
+
+        // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
+        SalesHeader := TestFixturesSales.CreateSalesOrder();
+        TestFixturesSales.CreateSalesLines(SalesHeader, 2);
+        TestFixturesSales.ImportMSTOrders(SalesHeader, 4);
+
+        // [WHEN] we post the Sales Order
+        MSTOrderNo := SalesHeader."No.";
+        SalesPost.Run(SalesHeader);
+
+        // [THEN] 2 Sales Invoices are posted from the Sales Orders created from the MSTs
+        SalesHeader.SETRANGE("DOK MST Order No.", MSTOrderNo);
+
+    end;
+
+    [Test]
+    procedure Test_PostOrdersCreatedFrom10Lines200MSTs()
+    var
+        SalesHeader: Record "Sales Header";
+        MST: Record "DOK Multiple Ship-to Orders";
+        SalesLine: Record "Sales Line";
+        Resource: Record Resource;
+        Setup: Record "DOK Setup";
+        MSTOrderNo: Code[20];
+        FreightCode: Code[20];
+        SalesPost: Codeunit "Sales-Post";
+        QtyOnOrderLinesCreatedFromMSTOrders: Decimal;
+    begin
+
+        // [SETUP] Create a Resource for the Freight line
+        //[SETUP] Create a Resource for the Freight line
+        FreightCode := TestHelpersUtilities.GetRandomString(20);
+        if not Setup.Get() then begin
+            Setup.Init();
+            Setup."Freight No." := FreightCode;
+            Setup.Insert();
+        end else begin
+            Setup."Freight No." := FreightCode;
+            Setup.Modify(TRUE)
+        end;
+        TestHelpersUtilities.CreateResource(Resource, FreightCode);
+
+        // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
+        SalesHeader := TestFixturesSales.CreateSalesOrder();
+        TestFixturesSales.CreateSalesLines(SalesHeader, 10);
+        TestFixturesSales.ImportMSTOrders(SalesHeader, 20);
+
+        // [WHEN] we post the Sales Order
+        MSTOrderNo := SalesHeader."No.";
+        SalesPost.Run(SalesHeader);
+
+        // [THEN] 2 Sales Invoices are posted from the Sales Orders created from the MSTs
+        SalesHeader.SETRANGE("DOK MST Order No.", MSTOrderNo);
+
+    end;
+
     var
         TestHelpers: Codeunit "DOK Test Helpers";
         TestFixturesSales: Codeunit "DOK Test Fixtures Sales";
+        TestHelpersUtilities: Codeunit "DOK Test Utilities";
         TestHelpersSales: Codeunit "Test Helpers Sales";
 
 }

@@ -33,7 +33,6 @@ codeunit 50003 "DOK Test Fixtures Sales"
         SalesLine."Line No." := LineNo;
         if SalesLine.Quantity = 0 then
             SalesLine.Validate(Quantity, 1);
-        EXIT(SalesLine);
     end;
 
     procedure CreateSalesLines(SalesHeader: Record "Sales Header"; NumberOfLines: Integer)
@@ -72,6 +71,9 @@ codeunit 50003 "DOK Test Fixtures Sales"
     var
         RandomInt: Integer;
     begin
+        Item.SetFilter("Blocked", '=%1', FALSE);
+        Item.SetFilter("Item Tracking Code", '=%1', '');
+        Item.SetFilter("Gen. Prod. Posting Group", '<>%1', 'RAW MAT');
         Item.FINDSET;
         RandomInt := Random(Item.COUNT);
         Item.Next(RandomInt);
@@ -94,6 +96,7 @@ codeunit 50003 "DOK Test Fixtures Sales"
         MSTOrders: Record "DOK Multiple Ship-to Orders";
         SalesLine: Record "Sales Line";
         NumberOfIterations: Integer;
+        Util: Codeunit "DOK Test Utilities";
     begin
         // populate MSTOrders with random address data
         SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
@@ -107,10 +110,10 @@ codeunit 50003 "DOK Test Fixtures Sales"
                 MSTOrders.INIT;
                 MSTOrders."Order No." := SalesHeader."No.";
                 MSTOrders."Line No." := SalesLine."Line No.";
-                MSTOrders."Ship-to Name" := TestHelpers.GetRandomString(8);
-                MSTOrders."Ship-to Address" := TestHelpers.GetRandomString(8);
-                MSTOrders."Ship-to City" := TestHelpers.GetRandomString(8);
-                MSTOrders."Ship-to State" := TestHelpers.GetRandomString(8);
+                MSTOrders."Ship-to Name" := Util.GetRandomString(8);
+                MSTOrders."Ship-to Address" := Util.GetRandomString(8);
+                MSTOrders."Ship-to City" := Util.GetRandomString(8);
+                MSTOrders."Ship-to State" := Util.GetRandomString(8);
                 MSTOrders."Ship-to Post Code" := '84454';
                 MSTOrders."Ship-to Country" := 'US';
                 MSTOrders."Ship-to Phone No." := '333.333.3333';
@@ -125,5 +128,5 @@ codeunit 50003 "DOK Test Fixtures Sales"
 
     var
         TestHelpers: Codeunit "DOK Test Helpers";
-
+        TestHelpersUtilities: Codeunit "DOK Test Utilities";
 }
