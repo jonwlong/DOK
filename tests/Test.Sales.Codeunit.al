@@ -159,6 +159,69 @@ codeunit 50001 "Test Sales Orders"
             until SalesLine.NEXT = 0;
     end;
 
+    [Test]
+    procedure Test_MSTOrderCreates2OrdersOnPost()
+    var
+        SalesHeader: Record "Sales Header";
+        MST: Record "DOK Multiple Ship-to Orders";
+        SalesLine: Record "Sales Line";
+        MSTOrderNo: Code[20];
+        SalesPost: Codeunit "Sales-Post";
+        QtyOnOrderLinesCreatedFromMSTOrders: Decimal;
+    begin
+        // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
+        SalesHeader := TestFixturesSales.CreateSalesOrder();
+        TestFixturesSales.CreateSalesLines(SalesHeader, 1);
+        TestFixturesSales.ImportMSTOrders(SalesHeader, 2);
+
+        // [WHEN] we post the Sales Order
+        MSTOrderNo := SalesHeader."No.";
+        SalesPost.Run(SalesHeader);
+
+        // [THEN] 2 Sales Orders where the "DOK MST Order No." = the SalesHeader No.
+        SalesHeader.SETRANGE("DOK MST Order No.", MSTOrderNo);
+        TestHelpers.AssertTrue(SalesHeader.COUNT = 2, 'Expected 2 Sales Orders to be created, but found %1', SalesHeader.COUNT);
+        // Assert that the Sales Orders created in the posting have the qty on the associated sales line from the MSTs
+        SalesHeader.Reset();
+        SalesHeader.SETRANGE("DOK MST Order No.", MSTOrderNo);
+        if SalesHeader.FINDSET then
+            repeat
+                SalesLine.SETRANGE("Document Type", SalesLine."Document Type"::Order);
+                SalesLine.SETRANGE("Document No.", SalesHeader."No.");
+                SalesLine.SETRANGE(Type, SalesLine.Type::Item);
+                SalesLine.CALCSUMS("Quantity");
+                QtyOnOrderLinesCreatedFromMSTOrders += SalesLine.Quantity;
+            until SalesHeader.NEXT = 0;
+        // Assert that the total quantity on the Sales Order lines created from the MSTs is equal to the total quantity on the MSTs
+        MST.SETRANGE("Order No.", MSTOrderNo);
+        MST.CALCSUMS("Quantity");
+        TestHelpers.AssertTrue(QtyOnOrderLinesCreatedFromMSTOrders = MST.Quantity, 'Total Quantity is not %1, It''s %2', MST.Quantity, QtyOnOrderLinesCreatedFromMSTOrders);
+    end;
+
+    [Test]
+    procedure Test_PostOrdersCreatedFromMSTs()
+    var
+        SalesHeader: Record "Sales Header";
+        MST: Record "DOK Multiple Ship-to Orders";
+        SalesLine: Record "Sales Line";
+        MSTOrderNo: Code[20];
+        SalesPost: Codeunit "Sales-Post";
+        QtyOnOrderLinesCreatedFromMSTOrders: Decimal;
+    begin
+        // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
+        SalesHeader := TestFixturesSales.CreateSalesOrder();
+        TestFixturesSales.CreateSalesLines(SalesHeader, 1);
+        TestFixturesSales.ImportMSTOrders(SalesHeader, 2);
+
+        // [WHEN] we post the Sales Order
+        MSTOrderNo := SalesHeader."No.";
+        SalesPost.Run(SalesHeader);
+
+        // [THEN] 2 Sales Invoices are posted from the Sales Orders created from the MSTs
+        SalesHeader.SETRANGE("DOK MST Order No.", MSTOrderNo);
+
+    end;
+
     var
         TestHelpers: Codeunit "DOK Test Helpers";
         TestFixturesSales: Codeunit "DOK Test Fixtures Sales";

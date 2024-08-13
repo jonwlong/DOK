@@ -63,7 +63,6 @@ table 50000 "DOK Multiple Ship-to Orders"
             begin
                 MST.SetRange("Order No.", Rec."Order No.");
                 MST.SetRange("Line No.", Rec."Line No.");
-                MST.SetFilter("Entry No.", '<>%1', Rec."Entry No.");
                 MST.CalcSums("Quantity");
                 SalesLine.Get(SalesLine."Document Type"::Order, Rec."Order No.", Rec."Line No.");
                 SalesLine.Validate("Quantity", MST.Quantity + Rec."Quantity");
