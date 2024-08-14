@@ -456,7 +456,7 @@ codeunit 50001 "Test Sales Orders"
         SalesInvoiceHeader.SetRange("Document Type", SalesInvoiceHeader."Document Type"::Invoice);
         TestHelpers.AssertTrue(SalesInvoiceHeader.Count = 1, 'Expected 1 Sales Invoice Header to be created. Only %1 were created', SalesInvoiceHeader.Count);
 
-        // [THEN] 8 sales invoice lines should have been created
+        // [THEN] 12 sales invoice lines should have been created
         SalesInvoiceHeader.FindFirst();
         SalesLine.SetRange("Document Type", SalesLine."Document Type"::Invoice);
         SalesLine.SetRange("Document No.", SalesInvoiceHeader."No.");
@@ -487,7 +487,7 @@ codeunit 50001 "Test Sales Orders"
         TestFixturesSales.CreateSalesLines(SalesHeader, 1);
         TestFixturesSales.ImportMSTOrders(SalesHeader, 4);
 
-        // [WHEN] we post the Sales Order
+        // [WHEN] we post the Sales Order of type Invoice
         MSTOrderNo := SalesHeader."No.";
         MSTMgt.CreateOrdersFromMST(SalesHeader);
         BatchPostMSTSalesOrders.PostShipMSTSalesOrders(MSTOrderNo);
