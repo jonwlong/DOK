@@ -3,18 +3,13 @@ codeunit 50006 "DOK Freight Management"
 
     procedure CalculateFreight(SalesHeader: Record "Sales Header"): Decimal
     var
-        SalesLine: Record "Sales Line";
         bypassAPIFunction: Boolean;
+        FreightAmount: Decimal;
     begin
-        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
-        SalesLine.SetRange("Document No.", SalesHeader."No.");
-        SalesLine.SetRange("Type", SalesLine."Type"::Item);
-        SalesLine.CalcSums(Amount);
-        // add an integration event with IsHandled
-        OnBeforeCalculateFreight(BypassAPIFunction);
-        if not BypassAPIFunction then
-            sleep(500); // Simulate a long running process, API call, etc.
-        exit(SalesLine.Amount * 0.1);
+        OnBeforeCalculateFreight(BypassAPIFunction, FreightAmount);
+        if BypassAPIFunction then
+            exit(FreightAmount);
+        FreightAmount := CallAPIFreightCalc(SalesHeader);
     end;
 
     procedure AddFreightLine(SalesHeader: Record "Sales Header"; FreightAmount: Decimal)
@@ -38,8 +33,21 @@ codeunit 50006 "DOK Freight Management"
         SalesLine.Insert(true);
     end;
 
+    local procedure CallAPIFreightCalc(SalesHeader: Record "Sales Header"): Decimal
+    var
+        SalesLine: Record "Sales Line";
+        bypassAPIFunction: Boolean;
+    begin
+        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetRange("Type", SalesLine."Type"::Item);
+        SalesLine.CalcSums(Amount);
+        sleep(500); // Simulate a long running process, API call, etc.
+        exit(SalesLine.Amount * 0.1);
+    end;
+
     [IntegrationEvent(false, false)]
-    procedure OnBeforeCalculateFreight(var ByPassAPIFunction: Boolean);
+    procedure OnBeforeCalculateFreight(var ByPassAPIFunction: Boolean; var FreightAmount: Decimal);
     begin
     end;
 
