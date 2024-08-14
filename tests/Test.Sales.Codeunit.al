@@ -22,6 +22,7 @@ codeunit 50001 "Test Sales Orders"
             Setup.Modify(true)
         end;
         TestHelpersUtilities.CreateResource(Resource, FreightCode);
+        WorkDate(Today);
 
     end;
 
