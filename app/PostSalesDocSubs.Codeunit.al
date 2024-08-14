@@ -5,11 +5,25 @@ codeunit 50008 "DOK Post Sales Subs"
     var
         MSTManagement: Codeunit "DOK MST Management";
     begin
-        if SalesHeader.IsMSTOrder then begin
-            IsHandled := true;
-            MSTManagement.CreateOrdersFromMST(SalesHeader);
-            MSTManagement.PostOrdersCreatedFromMST(SalesHeader);
+        if SalesHeader.HasMSTOrders() then begin // if the order has MST orders, don't post this order
+            Error('This is an MST Order. Please use the Post MST action for this order.');
         end;
     end;
+
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Sales-Post", OnAfterPostSalesDoc, '', false, false)]
+    local procedure "Sales-Post_OnAfterPostSalesDoc"(var SalesHeader: Record "Sales Header"; var GenJnlPostLine: Codeunit "Gen. Jnl.-Post Line"; SalesShptHdrNo: Code[20]; RetRcpHdrNo: Code[20]; SalesInvHdrNo: Code[20]; SalesCrMemoHdrNo: Code[20]; CommitIsSuppressed: Boolean; InvtPickPutaway: Boolean; var CustLedgerEntry: Record "Cust. Ledger Entry"; WhseShip: Boolean; WhseReceiv: Boolean; PreviewMode: Boolean)
+    var
+        ShipLine: Record "Sales Shipment Line";
+    begin
+        if SalesHeader.IsMSTOrder then begin
+            ShipLine.SetRange("Document No.", SalesShptHdrNo);
+            if ShipLine.FindSet() then
+                repeat
+                    ShipLine."DOK MST Order No." := SalesHeader."DOK MST Order No.";
+                    ShipLine.Modify(true);
+                until ShipLine.Next = 0;
+        end;
+    end;
+
 
 }

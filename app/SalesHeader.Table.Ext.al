@@ -27,8 +27,28 @@ tableextension 50001 "Sales Header Ext" extends "Sales Header"
     var
         MST: Record "DOK Multiple Ship-to Orders";
     begin
+        exit(Rec."DOK MST Order No." <> '');
+        // if Rec."Document Type" <> Rec."Document Type"::Order then
+        //     exit(false);
+        // MST.SETRANGE("Order No.", Rec."No.");
+        // exit(NOT MST.IsEmpty);
+    end;
+
+    procedure HasMSTOrders(): Boolean;
+    var
+        MST: Record "DOK Multiple Ship-to Orders";
+    begin
+        if Rec."Document Type" <> Rec."Document Type"::Order then
+            exit(false);
         MST.SETRANGE("Order No.", Rec."No.");
         exit(NOT MST.IsEmpty);
+    end;
+
+    procedure PostMSTOrder();
+    var
+        MSTManagement: Codeunit "DOK MST Management";
+    begin
+        MSTManagement.PostOrdersCreatedFromMST(Rec);
     end;
 
 
