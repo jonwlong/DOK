@@ -44,7 +44,7 @@ tableextension 50001 "Sales Header Ext" extends "Sales Header"
         exit(NOT MST.IsEmpty);
     end;
 
-    procedure PostMSTOrder();
+    procedure PostShipMSTOrder();
     var
         MSTManagement: Codeunit "DOK MST Management";
     begin

@@ -91,7 +91,7 @@ codeunit 50003 "DOK Test Fixtures Sales"
         LastPostedSalesInvoice.Get(NoSeriesLine."Last No. Used");
     end;
 
-    procedure ImportMSTOrders(SalesHeader: Record "Sales Header"; NumberOfMSTOrders: Integer);
+    procedure CreateMSTOrders(SalesHeader: Record "Sales Header"; NumberOfMSTOrders: Integer);
     var
         MSTOrders: Record "DOK Multiple Ship-to Orders";
         SalesLine: Record "Sales Line";
