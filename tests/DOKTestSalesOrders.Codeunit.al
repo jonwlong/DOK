@@ -1,10 +1,10 @@
-codeunit 50001 "Test Sales Orders"
+codeunit 50001 "DOK Test Sales Orders"
 {
     Subtype = Test;
 
     local procedure Initialze()
     var
-        Resource: Record "Resource";
+        Resource: Record Resource;
         Setup: Record "DOK Setup";
         FreightCode: Code[20];
     begin
@@ -12,7 +12,7 @@ codeunit 50001 "Test Sales Orders"
         if Initialized then
             exit;
         Initialized := true;
-        FreightCode := TestHelpersUtilities.GetRandomString(20);
+        FreightCode := CopyStr(TestHelpersUtilities.GetRandomString(20), 1, MaxStrLen(FreightCode));
         if not Setup.Get() then begin
             Setup.Init();
             Setup."Freight No." := FreightCode;
@@ -104,10 +104,10 @@ codeunit 50001 "Test Sales Orders"
         // [THEN] The Orginal Order Qty. is populated with the same value as the Quantity field for each Sales Invoice Line
         SalesInvoiceLine.SetRange("Document No.", SalesHeader."DOK MST Order No.");
         SalesInvoiceLine.SetRange(Type, SalesInvoiceLine.Type::Item);
-        if SalesInvoiceLine.FindSet then
+        if SalesInvoiceLine.FindSet() then
             repeat
                 TestHelpers.AreEqual(SalesInvoiceLine."DOK Original Order Qty.", SalesInvoiceLine.Quantity, 'Original Quantity is not populated with the same value as the Quantity field');
-            until SalesInvoiceLine.Next = 0;
+            until SalesInvoiceLine.Next() = 0;
     end;
 
     [Test]
@@ -192,13 +192,13 @@ codeunit 50001 "Test Sales Orders"
         SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         SalesLine.SetRange(Type, SalesLine.Type::Item);
-        if SalesLine.FindSet then
+        if SalesLine.FindSet() then
             repeat
                 MST.SetRange("Order No.", SalesHeader."No.");
                 MST.SetRange("Line No.", SalesLine."Line No.");
                 MST.CalcSums(Quantity);
                 TestHelpers.AssertTrue(SalesLine.Quantity = MST.Quantity, 'Total Quantity is not %1, It''s %2', MST.Quantity, SalesLine.Quantity);
-            until SalesLine.Next = 0;
+            until SalesLine.Next() = 0;
     end;
 
     [Test]
@@ -207,8 +207,8 @@ codeunit 50001 "Test Sales Orders"
         SalesHeader: Record "Sales Header";
         MST: Record "DOK Multiple Ship-to Orders";
         SalesLine: Record "Sales Line";
-        MSTOrderNo: Code[20];
         MSTManagement: Codeunit "DOK MST Management";
+        MSTOrderNo: Code[20];
         QtyOnOrderLinesCreatedFromMSTOrders: Decimal;
     begin
         Initialze();
@@ -229,14 +229,14 @@ codeunit 50001 "Test Sales Orders"
         // Assert that the Sales Orders created in the posting have the qty on the associated sales line from the MSTs
         SalesHeader.Reset();
         SalesHeader.SetRange("DOK MST Order No.", MSTOrderNo);
-        if SalesHeader.FindSet then
+        if SalesHeader.FindSet() then
             repeat
                 SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
                 SalesLine.SetRange("Document No.", SalesHeader."No.");
                 SalesLine.SetRange(Type, SalesLine.Type::Item);
                 SalesLine.CalcSums(Quantity);
                 QtyOnOrderLinesCreatedFromMSTOrders += SalesLine.Quantity;
-            until SalesHeader.Next = 0;
+            until SalesHeader.Next() = 0;
         // Assert that the total quantity on the Sales Order lines created from the MSTs is equal to the total quantity on the MSTs
         MST.SetRange("Order No.", MSTOrderNo);
         MST.CalcSums(Quantity);
@@ -289,32 +289,6 @@ codeunit 50001 "Test Sales Orders"
 
     end;
 
-    // [Test]
-    // procedure Test_PostOrdersCreatedFrom10Lines200MSTs()
-    // var
-    //     SalesHeader: Record "Sales Header";
-    //     Resource: Record Resource;
-    //     Setup: Record "DOK Setup";
-    //     MSTOrderNo: Code[20];
-    //     FreightCode: Code[20];
-    // begin
-
-    //     Initialze();
-
-    //     // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
-    //     SalesHeader := TestFixturesSales.CreateSalesOrder();
-    //     TestFixturesSales.CreateSalesLines(SalesHeader, 10);
-    //     TestFixturesSales.ImportMSTOrders(SalesHeader, 20);
-
-    //     // [WHEN] we post the Sales Order
-    //     MSTOrderNo := SalesHeader."No.";
-    //     SalesHeader.PostMSTOrder();
-
-    //     // [THEN] 2 Sales Invoices are posted from the Sales Orders created from the MSTs
-    //     SalesHeader.SetRange("DOK MST Order No.", MSTOrderNo);
-
-    // end;
-
     [Test]
     [HandlerFunctions('PostBatchSalesPostingMessageHandler')]
 
@@ -322,8 +296,8 @@ codeunit 50001 "Test Sales Orders"
     var
         SalesHeader: Record "Sales Header";
         SalesShipLine: Record "Sales Shipment Line";
-        BatchPostMSTSalesOrders: Codeunit "DOK Batch Post MST SalesOrders";
         SalesShipmentHeader: Record "Sales Shipment Header";
+        BatchPostMSTSalesOrders: Codeunit "DOK Batch Post MST SalesOrders";
         MSTMgt: Codeunit "DOK MST Management";
         MSTOrderNo: Code[20];
     begin
@@ -358,8 +332,8 @@ codeunit 50001 "Test Sales Orders"
         SalesHeader: Record "Sales Header";
         SalesInvoiceHeader: Record "Sales Header";
         SalesShipLine: Record "Sales Shipment Line";
-        BatchPostMSTSalesOrders: Codeunit "DOK Batch Post MST SalesOrders";
         SalesShipmentHeader: Record "Sales Shipment Header";
+        BatchPostMSTSalesOrders: Codeunit "DOK Batch Post MST SalesOrders";
         MSTMgt: Codeunit "DOK MST Management";
         MSTOrderNo: Code[20];
     begin
@@ -401,8 +375,8 @@ codeunit 50001 "Test Sales Orders"
         SalesInvoiceHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
         SalesShipLine: Record "Sales Shipment Line";
-        BatchPostMSTSalesOrders: Codeunit "DOK Batch Post MST SalesOrders";
         SalesShipmentHeader: Record "Sales Shipment Header";
+        BatchPostMSTSalesOrders: Codeunit "DOK Batch Post MST SalesOrders";
         MSTMgt: Codeunit "DOK MST Management";
         MSTOrderNo: Code[20];
     begin
@@ -447,36 +421,23 @@ codeunit 50001 "Test Sales Orders"
     procedure Test_CombineMSTShipmentTo1InvoiceContains12LinesPostInvoice()
     var
         SalesHeader: Record "Sales Header";
-        SalesInvoiceHeader: Record "Sales Header";
         PostedSalesInvoice: Record "Sales Invoice Header";
         PostedSalesInvoiceLine: Record "Sales Invoice Line";
-        BatchPostMSTSalesOrders: Codeunit "DOK Batch Post MST SalesOrders";
-        MSTMgt: Codeunit "DOK MST Management";
-        MSTOrderNo: Code[20];
         SalesPost: Codeunit "Sales-Post";
     begin
 
         Initialze();
 
         // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
-        SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.CreateSalesLines(SalesHeader, 1);
-        TestFixturesSales.CreateMSTOrders(SalesHeader, 4);
-        MSTOrderNo := SalesHeader."No.";
-        MSTMgt.CreateOrdersFromMST(SalesHeader);
-        BatchPostMSTSalesOrders.PostShipMSTSalesOrders(MSTOrderNo);
-        BatchPostMSTSalesOrders.CreateInvoiceWithCombinedMSTShipments(MSTOrderNo);
-        SalesInvoiceHeader.SetRange("DOK MST Order No.", MSTOrderNo);
-        SalesInvoiceHeader.SetRange("Document Type", SalesInvoiceHeader."Document Type"::Invoice);
-        SalesInvoiceHeader.FindFirst();
+        SalesHeader := TestFixturesSales.CreateSalesInvoiceWithMSTShipmentLines(SalesHeader, 4);
 
         // [WHEN] we post the Sales Order of type Invoice
-        SalesPost.Run(SalesInvoiceHeader);
+        SalesPost.Run(SalesHeader);
 
         // [THEN] The Sales Invoice is posted with MSTOrderNo
-        PostedSalesInvoice.SetRange("DOK MST Order No.", MSTOrderNo);
+        PostedSalesInvoice.SetRange("DOK MST Order No.", SalesHeader."DOK MST Order No.");
         // assert that the posted invoice is found
-        TestHelpers.AssertTrue(not PostedSalesInvoice.IsEmpty, 'Sales Invoice was not posted with MST Order No. %1', MSTOrderNo);
+        TestHelpers.AssertTrue(not PostedSalesInvoice.IsEmpty, 'Sales Invoice was not posted with MST Order No. %1', SalesHeader."DOK MST Order No.");
         // assert that the invoice contains 12 lines
         PostedSalesInvoice.FindFirst();
         PostedSalesInvoiceLine.SetRange("Document No.", PostedSalesInvoice."No.");

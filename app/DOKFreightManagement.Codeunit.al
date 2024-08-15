@@ -6,8 +6,8 @@ codeunit 50006 "DOK Freight Management"
         bypassAPIFunction: Boolean;
         FreightAmount: Decimal;
     begin
-        OnBeforeCalculateFreight(BypassAPIFunction, FreightAmount);
-        if BypassAPIFunction then
+        OnBeforeCalculateFreight(bypassAPIFunction, FreightAmount);
+        if bypassAPIFunction then
             exit(FreightAmount);
         FreightAmount := CallAPIFreightCalc(SalesHeader);
     end;
@@ -19,14 +19,14 @@ codeunit 50006 "DOK Freight Management"
     begin
         // Add a Resource line to the Sales Order with line no 999999
         Setup.Get();
-        SalesLine.INIT;
+        SalesLine.Init();
         SalesLine.Validate("Document Type", SalesLine."Document Type"::Order);
         SalesLine.Validate("Document No.", SalesHeader."No.");
         SalesLine.Validate("Line No.", 999999);
         SalesLine.Validate("Type", SalesLine."Type"::Resource);
         SalesLine.Validate("No.", Setup."Freight No.");
-        SalesLine.Validate("Description", 'Freight');
-        SalesLine.Validate("Quantity", 1);
+        SalesLine.Validate(Description, 'Freight');
+        SalesLine.Validate(Quantity, 1);
         SalesLine.Validate("Unit Price", FreightAmount);
         SalesLine.Validate("Unit Cost", 0);
         SalesLine."Tax Group Code" := 'VAT';
@@ -36,13 +36,12 @@ codeunit 50006 "DOK Freight Management"
     local procedure CallAPIFreightCalc(SalesHeader: Record "Sales Header"): Decimal
     var
         SalesLine: Record "Sales Line";
-        bypassAPIFunction: Boolean;
     begin
         SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         SalesLine.SetRange("Type", SalesLine."Type"::Item);
         SalesLine.CalcSums(Amount);
-        sleep(500); // Simulate a long running process, API call, etc.
+        Sleep(500); // Simulate a long running process, API call, etc.
         exit(SalesLine.Amount * 0.1);
     end;
 

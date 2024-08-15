@@ -1,11 +1,21 @@
-tableextension 50001 "Sales Header Ext" extends "Sales Header"
+tableextension 50001 "DOK Sales Header Ext" extends "Sales Header"
 {
     fields
     {
         // MSTOrderNo
         field(50000; "DOK MST Order No."; Code[20])
         {
-            DataClassification = ToBeClassified;
+            DataClassification = SystemMetadata;
+        }
+    }
+
+    keys
+    {
+        key(DOKMSTOrder; "DOK MST Order No.")
+        {
+        }
+        key(DOKSalesHeader; "No.")
+        {
         }
     }
 
@@ -24,14 +34,8 @@ tableextension 50001 "Sales Header Ext" extends "Sales Header"
     end;
 
     procedure IsMSTOrder(): Boolean;
-    var
-        MST: Record "DOK Multiple Ship-to Orders";
     begin
         exit(Rec."DOK MST Order No." <> '');
-        // if Rec."Document Type" <> Rec."Document Type"::Order then
-        //     exit(false);
-        // MST.SETRANGE("Order No.", Rec."No.");
-        // exit(NOT MST.IsEmpty);
     end;
 
     procedure HasMSTOrders(): Boolean;
@@ -40,8 +44,8 @@ tableextension 50001 "Sales Header Ext" extends "Sales Header"
     begin
         if Rec."Document Type" <> Rec."Document Type"::Order then
             exit(false);
-        MST.SETRANGE("Order No.", Rec."No.");
-        exit(NOT MST.IsEmpty);
+        MST.SetRange("Order No.", Rec."No.");
+        exit(not MST.IsEmpty);
     end;
 
     procedure PostShipMSTOrder();

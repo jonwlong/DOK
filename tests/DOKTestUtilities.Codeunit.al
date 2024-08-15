@@ -14,7 +14,6 @@ codeunit 50010 "DOK Test Utilities"
     procedure CreateResource(var Resource: Record Resource; ResourceNo: Code[20])
     var
         GeneralPostingSetup: Record "General Posting Setup";
-        VATPostingSetup: Record "VAT Posting Setup";
         UnitOfMeasure: Record "Unit of Measure";
     begin
         Resource.Init();
@@ -25,8 +24,7 @@ codeunit 50010 "DOK Test Utilities"
 
         GeneralPostingSetup.SetFilter("Gen. Bus. Posting Group", '<>%1', '');
         GeneralPostingSetup.SetFilter("Gen. Prod. Posting Group", '<>%1', '');
-        GeneralPostingSetup.SetFilter("Sales Account", '<>%1', '');
-        GeneralPostingSetup.FindFirst();
+        GeneralPostingSetup.FindLast();
 
         Resource.Validate(Name, ResourceNo);
         Resource.Validate("Base Unit of Measure", UnitOfMeasure.Code);
@@ -34,10 +32,6 @@ codeunit 50010 "DOK Test Utilities"
         Resource.Validate("Unit Price", Random(100));  // Required field - value is not important.
         Resource.Validate("Gen. Prod. Posting Group", GeneralPostingSetup."Gen. Prod. Posting Group");
 
-        // VATPostingSetup.SetRange("VAT Bus. Posting Group", VATBusPostingGroup);
-        // VATPostingSetup.SetRange("VAT Calculation Type", VATPostingSetup."VAT Calculation Type"::"Normal VAT");
-        // if VATPostingSetup.FindFirst() then
-        //     Resource.Validate("VAT Prod. Posting Group", VATPostingSetup."VAT Prod. Posting Group");
         Resource.Modify(true);
     end;
 
@@ -45,7 +39,4 @@ codeunit 50010 "DOK Test Utilities"
     begin
         exit(CopyStr(DelChr(Format(CreateGuid()), '=', '{}-'), 1, Length));
     end;
-
-    var
-        TestHelper: Codeunit "Test Helpers Sales";
 }

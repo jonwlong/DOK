@@ -4,11 +4,11 @@ table 50001 "DOK Setup"
     {
         field(1; "Code"; Code[20])
         {
-            DataClassification = ToBeClassified;
+            DataClassification = SystemMetadata;
         }
-        field(2; "Freight No."; code[20])
+        field(2; "Freight No."; Code[20])
         {
-            DataClassification = ToBeClassified;
+            DataClassification = SystemMetadata;
         }
     }
 

@@ -5,7 +5,17 @@ tableextension 50002 "DOK Sales Invoice Header Ext" extends "Sales Invoice Heade
         // MSTOrderNo
         field(50000; "DOK MST Order No."; Code[20])
         {
-            DataClassification = ToBeClassified;
+            DataClassification = SystemMetadata;
+        }
+    }
+
+    keys
+    {
+        key(DOKMSTOrder; "DOK MST Order No.")
+        {
+        }
+        key(DOKSalesInvoiceHeader; "No.")
+        {
         }
     }
 }

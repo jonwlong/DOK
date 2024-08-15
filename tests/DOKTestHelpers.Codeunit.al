@@ -8,13 +8,13 @@ codeunit 50002 "DOK Test Helpers"
             Error(errorMessageLbl, errorMessage);
     end;
 
-    procedure AreEqual(value1: integer; value2: integer; errorMessage: Variant);
+    procedure AreEqual(value1: Integer; value2: Integer; errorMessage: Variant);
     begin
         if value1 <> value2 then
             Error('Error: %1', errorMessage);
     end;
 
-    procedure AreEqual(value1: text; value2: text; errorMessage: Variant);
+    procedure AreEqual(value1: Text; value2: Text; errorMessage: Variant);
     begin
         if value1 <> value2 then
             Error('Error: %1', errorMessage);

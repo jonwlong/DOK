@@ -1,4 +1,4 @@
-codeunit 50000 "Test Tinker"
+codeunit 50000 "DOK Test Tinker"
 {
     Subtype = Test;
 
@@ -11,18 +11,18 @@ codeunit 50000 "Test Tinker"
     end;
 
     [Test]
-    procedure "Test_AllItemsHaveAUnitPrice"()
+    procedure Test_AllItemsHaveAUnitPrice()
     var
         Item: Record Item;
     begin
         Item.FindSet();
         repeat
             TestHelpers.AssertTrue(Item."Unit Price" > 0, 'Item ' + Format(Item."No.") + ' has no unit price');
-        until Item.NEXT = 0;
+        until Item.Next() = 0;
     end;
 
     [Test]
-    procedure "Test_CountOfItemsWithZeroUnitPrice"()
+    procedure Test_CountOfItemsWithZeroUnitPrice()
     var
         Item: Record Item;
         CountOfItemsWithZeroPrice: Integer;
@@ -31,7 +31,7 @@ codeunit 50000 "Test Tinker"
         repeat
             if Item."Unit Price" = 0 then
                 CountOfItemsWithZeroPrice += 1;
-        until Item.NEXT = 0;
+        until Item.Next() = 0;
         if CountOfItemsWithZeroPrice > 0 then
             Error('%1 items of %2 have no unit price', CountOfItemsWithZeroPrice, Item.Count);
     end;
@@ -88,16 +88,16 @@ codeunit 50000 "Test Tinker"
     end;
 
     [Test]
-    procedure "Test_TestPage"()
+    procedure Test_TestPage()
     var
-        CustomerPage: TestPage "Customer Card";
         Customer: Record Customer;
+        CustomerPage: TestPage "Customer Card";
     begin
         Customer.FindFirst();
         CustomerPage.OpenEdit();
         CustomerPage.GoToRecord(Customer);
         CustomerPage."Credit Limit (LCY)".SetValue(0);
-        Customerpage.next();
+        CustomerPage.Next();
 
         // [GIVEN] Given Some State 
         // [WHEN] When Some Action 

@@ -7,8 +7,8 @@ codeunit 50009 "DOK MST Management"
         SalesLine: Record "Sales Line";
         MSTSalesLine: Record "Sales Line";
     begin
-        MST.SETRANGE("Order No.", MSTSalesHeader."No.");
-        if MST.FINDSET then begin
+        MST.SetRange("Order No.", MSTSalesHeader."No.");
+        if MST.FindSet() then
             repeat
                 // Create a new Sales Order with lines from the MST. The ship to addresses come from the MST Lines
                 // The Sales Header is a duplicate of the original Sales Order
@@ -26,14 +26,13 @@ codeunit 50009 "DOK MST Management"
                 SalesHeader.Validate("Ship-to Post Code", MST."Ship-to Post Code");
                 SalesHeader.Validate("Ship-to Country/Region Code", MST."Ship-to Country");
                 SalesHeader.Insert(true);
-                MSTSalesLine.get(SalesLine."Document Type"::Order, MST."Order No.", MST."Line No.");
+                MSTSalesLine.Get(SalesLine."Document Type"::Order, MST."Order No.", MST."Line No.");
                 SalesLine.TransferFields(MSTSalesLine);
                 SalesLine."Document No." := SalesHeader."No.";
                 SalesLine.Validate("Sell-to Customer No.");
                 SalesLine.Validate(Quantity, MST.Quantity);
-                SalesLine.INSERT(true);
-            until MST.NEXT = 0;
-        end;
+                SalesLine.Insert(true);
+            until MST.Next() = 0;
     end;
 
     procedure PostOrdersCreatedFromMST(MSTSalesHeader: Record "Sales Header")
@@ -41,14 +40,14 @@ codeunit 50009 "DOK MST Management"
         SalesHeader: Record "Sales Header";
         SalesPost: Codeunit "Sales-Post";
     begin
-        SalesHeader.SETRANGE("DOK MST Order No.", MSTSalesHeader."No.");
-        if SalesHeader.FINDSET then
+        SalesHeader.SetRange("DOK MST Order No.", MSTSalesHeader."No.");
+        if SalesHeader.FindSet() then
             repeat
                 SalesHeader.Ship := true;
                 SalesHeader.Invoice := false;
                 SalesHeader.Modify(true);
                 SalesPost.Run(SalesHeader);
-            until SalesHeader.NEXT = 0;
+            until SalesHeader.Next() = 0;
     end;
 
 }

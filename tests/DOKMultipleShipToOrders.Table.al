@@ -1,61 +1,61 @@
 table 50000 "DOK Multiple Ship-to Orders"
 {
     // create a table with address fields with key field Order No., Line No.
-    DataClassification = ToBeClassified;
+    DataClassification = AccountData;
     fields
     {
         field(1; "Entry No."; BigInteger)
         {
-            DataClassification = ToBeClassified;
+            DataClassification = AccountData;
             Editable = false;
             AutoIncrement = true;
         }
         field(2; "Order No."; Code[20])
         {
-            DataClassification = ToBeClassified;
+            DataClassification = AccountData;
         }
         field(3; "Line No."; Integer)
         {
-            DataClassification = ToBeClassified;
+            DataClassification = AccountData;
         }
         field(4; "Ship-to Name"; Text[50])
         {
-            DataClassification = ToBeClassified;
+            DataClassification = AccountData;
         }
         field(5; "Ship-to Address"; Text[250])
         {
-            DataClassification = ToBeClassified;
+            DataClassification = AccountData;
         }
         field(6; "Ship-to City"; Text[30])
         {
-            DataClassification = ToBeClassified;
+            DataClassification = AccountData;
         }
         field(7; "Ship-to State"; Code[10])
         {
-            DataClassification = ToBeClassified;
+            DataClassification = AccountData;
         }
         field(8; "Ship-to Post Code"; Code[20])
         {
-            DataClassification = ToBeClassified;
+            DataClassification = AccountData;
         }
         field(9; "Ship-to Country"; Code[10])
         {
-            DataClassification = ToBeClassified;
+            DataClassification = AccountData;
         }
         // phone
         field(10; "Ship-to Phone No."; Code[30])
         {
-            DataClassification = ToBeClassified;
+            DataClassification = AccountData;
         }
         // email
         field(11; "Ship-to Email"; Code[80])
         {
-            DataClassification = ToBeClassified;
+            DataClassification = AccountData;
         }
         // quantity
-        field(12; "Quantity"; Decimal)
+        field(12; Quantity; Decimal)
         {
-            DataClassification = ToBeClassified;
+            DataClassification = AccountData;
             trigger OnValidate()
             var
                 SalesLine: Record "Sales Line";
@@ -63,9 +63,9 @@ table 50000 "DOK Multiple Ship-to Orders"
             begin
                 MST.SetRange("Order No.", Rec."Order No.");
                 MST.SetRange("Line No.", Rec."Line No.");
-                MST.CalcSums("Quantity");
+                MST.CalcSums(Quantity);
                 SalesLine.Get(SalesLine."Document Type"::Order, Rec."Order No.", Rec."Line No.");
-                SalesLine.Validate("Quantity", MST.Quantity + Rec."Quantity");
+                SalesLine.Validate(Quantity, MST.Quantity + Rec.Quantity);
                 SalesLine.Modify(true);
             end;
         }

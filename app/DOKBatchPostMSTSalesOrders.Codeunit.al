@@ -4,7 +4,6 @@ codeunit 50011 "DOK Batch Post MST SalesOrders"
     procedure PostShipMSTSalesOrders(MSTOrderNo: Text[20])
     var
         SalesHeader: Record "Sales Header";
-        MSTManagement: Codeunit "DOK MST Management";
         BatchPostReport: Report "Batch Post Sales Orders";
     begin
         SalesHeader.SetRange("DOK MST Order No.", MSTOrderNo);
@@ -17,8 +16,6 @@ codeunit 50011 "DOK Batch Post MST SalesOrders"
     var
         SalesHeader: Record "Sales Header";
         SalesShipLine: Record "Sales Shipment Line";
-        MSTManagement: Codeunit "DOK MST Management";
-        SalesPost: Codeunit "Sales-Post";
         SalesGetShipment: Codeunit "Sales-Get Shipment";
     begin
         SalesShipLine.SetRange("DOK MST Order No.", MSTOrderNo);

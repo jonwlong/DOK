@@ -1,10 +1,10 @@
-codeunit 50013 "DOK Calculate Freight Subs"
+codeunit 50013 "DOK Freight Management Subs"
 {
 
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"DOK Freight Management", OnBeforeCalculateFreight, '', false, false)]
     local procedure "DOK Freight Management_OnBeforeCalculateFreight"(var ByPassAPIFunction: Boolean; var FreightAmount: Decimal)
     begin
-        bypassAPIFunction := true;
+        ByPassAPIFunction := true;
         FreightAmount := 1;
     end;
 
