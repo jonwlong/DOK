@@ -45,15 +45,15 @@ codeunit 50003 "DOK Test Fixtures Sales"
         end;
     end;
 
-    procedure CreateSalesInvoiceWithMSTShipmentLines(SalesHeader: Record "Sales Header"; NumberOfMSTOrders: Integer) SalesInvoiceHeader: Record "Sales Header"
+    procedure CreateSalesInvoiceWithMSTShipmentLines(SalesHeader: Record "Sales Header"; NumberOfSalesLines: Integer; NumberOfMSTOrders: Integer) SalesInvoiceHeader: Record "Sales Header"
     var
         MSTMgt: Codeunit "DOK MST Management";
         BatchPostMSTSalesOrders: Codeunit "DOK Batch Post MST SalesOrders";
         MSTOrderNo: Code[20];
     begin
         SalesHeader := CreateSalesOrder();
-        CreateSalesLines(SalesHeader, 1);
-        CreateMSTOrders(SalesHeader, 4);
+        CreateSalesLines(SalesHeader, NumberOfSalesLines);
+        CreateMSTOrders(SalesHeader, NumberOfMSTOrders);
         MSTOrderNo := SalesHeader."No.";
         MSTMgt.CreateOrdersFromMST(SalesHeader);
         BatchPostMSTSalesOrders.PostShipMSTSalesOrders(MSTOrderNo);

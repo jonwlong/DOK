@@ -429,19 +429,48 @@ codeunit 50001 "DOK Test Sales Orders"
         Initialze();
 
         // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
-        SalesHeader := TestFixturesSales.CreateSalesInvoiceWithMSTShipmentLines(SalesHeader, 4);
+        SalesHeader := TestFixturesSales.CreateSalesInvoiceWithMSTShipmentLines(SalesHeader, 1, 4);
 
         // [WHEN] we post the Sales Order of type Invoice
         SalesPost.Run(SalesHeader);
 
         // [THEN] The Sales Invoice is posted with MSTOrderNo
         PostedSalesInvoice.SetRange("DOK MST Order No.", SalesHeader."DOK MST Order No.");
-        // assert that the posted invoice is found
         TestHelpers.AssertTrue(not PostedSalesInvoice.IsEmpty, 'Sales Invoice was not posted with MST Order No. %1', SalesHeader."DOK MST Order No.");
-        // assert that the invoice contains 12 lines
+
+        // [THEN] the invoice contains 12 lines
         PostedSalesInvoice.FindFirst();
         PostedSalesInvoiceLine.SetRange("Document No.", PostedSalesInvoice."No.");
         TestHelpers.AssertTrue(PostedSalesInvoiceLine.Count = 12, 'Expected 12 Sales Invoice Lines to be created. %1 were created', PostedSalesInvoiceLine.Count);
+    end;
+
+    [Test]
+    [HandlerFunctions('PostBatchSalesPostingMessageHandler')]
+
+    procedure Test_CombineMSTShipmentTo1InvoiceContains24LinesPostInvoice()
+    var
+        SalesHeader: Record "Sales Header";
+        PostedSalesInvoice: Record "Sales Invoice Header";
+        PostedSalesInvoiceLine: Record "Sales Invoice Line";
+        SalesPost: Codeunit "Sales-Post";
+    begin
+
+        Initialze();
+
+        // [GIVEN] A Sales Order with 2 Sales Line and 4 MSTs for each Sales Line
+        SalesHeader := TestFixturesSales.CreateSalesInvoiceWithMSTShipmentLines(SalesHeader, 2, 4);
+
+        // [WHEN] we post the Sales Order of type Invoice
+        SalesPost.Run(SalesHeader);
+
+        // [THEN] The Sales Invoice is posted with MSTOrderNo
+        PostedSalesInvoice.SetRange("DOK MST Order No.", SalesHeader."DOK MST Order No.");
+        TestHelpers.AssertTrue(not PostedSalesInvoice.IsEmpty, 'Sales Invoice was not posted with MST Order No. %1', SalesHeader."DOK MST Order No.");
+
+        // [THEN] the invoice contains 16 lines
+        PostedSalesInvoice.FindFirst();
+        PostedSalesInvoiceLine.SetRange("Document No.", PostedSalesInvoice."No.");
+        TestHelpers.AssertTrue(PostedSalesInvoiceLine.Count = 24, 'Expected 24 Sales Invoice Lines to be created. %1 were created', PostedSalesInvoiceLine.Count);
     end;
 
     //All of your selections were processed
