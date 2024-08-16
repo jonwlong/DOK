@@ -36,11 +36,13 @@ codeunit 50003 "DOK Test Fixtures Sales"
 
     procedure CreateSalesLine(Quantity: Decimal): Record "Sales Line"
     var
+        SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
     begin
+        SalesHeader := CreateSalesOrder();
         SalesLine.Init();
         SalesLine."Document Type" := SalesLine."Document Type"::Order;
-        SalesLine."Document No." := GetRandomSalesHeaderOfTypeOrder()."No.";
+        SalesLine."Document No." := SalesHeader."No.";
         SalesLine.Type := SalesLine.Type::Item;
         SalesLine."No." := GetRandomItem()."No.";
         SalesLine.Validate(Quantity, 1);
@@ -51,6 +53,7 @@ codeunit 50003 "DOK Test Fixtures Sales"
         SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::Order);
         SalesHeader.FindSet();
         SalesHeader.Next(Random(SalesHeader.Count));
+        SalesHeader."Shipment Date" := WORKDATE();
         exit(SalesHeader);
     end;
 

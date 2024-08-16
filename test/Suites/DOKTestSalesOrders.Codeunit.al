@@ -70,6 +70,7 @@ codeunit 50001 "DOK Test Sales Orders"
     var
         SalesLine: Record "Sales Line";
     begin
+
         // [GIVEN] A Sales Line of type Order
         SalesLine := TestFixturesSales.CreateSalesLine(4);
 
