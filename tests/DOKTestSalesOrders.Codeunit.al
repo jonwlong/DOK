@@ -467,7 +467,7 @@ codeunit 50001 "DOK Test Sales Orders"
         PostedSalesInvoice.SetRange("DOK MST Order No.", SalesHeader."DOK MST Order No.");
         TestHelpers.AssertTrue(not PostedSalesInvoice.IsEmpty, 'Sales Invoice was not posted with MST Order No. %1', SalesHeader."DOK MST Order No.");
 
-        // [THEN] the invoice contains 16 lines
+        // [THEN] the invoice contains 24 lines
         PostedSalesInvoice.FindFirst();
         PostedSalesInvoiceLine.SetRange("Document No.", PostedSalesInvoice."No.");
         TestHelpers.AssertTrue(PostedSalesInvoiceLine.Count = 24, 'Expected 24 Sales Invoice Lines to be created. %1 were created', PostedSalesInvoiceLine.Count);
