@@ -1,14 +1,14 @@
 codeunit 50010 "DOK Test Utilities"
 {
-    procedure CreateGenProdPostingGroup(var GenProductPostingGroup: Record "Gen. Product Posting Group"; NoToUse: Code[20])
-    begin
-        if not GenProductPostingGroup.Get(NoToUse) then begin
-            GenProductPostingGroup.Init();
-            GenProductPostingGroup.Code := NoToUse;
-            GenProductPostingGroup.Description := NoToUse;
-            GenProductPostingGroup.Insert()
-        end;
-    end;
+    // procedure CreateGenProdPostingGroup(var GenProductPostingGroup: Record "Gen. Product Posting Group"; NoToUse: Code[20])
+    // begin
+    //     if not GenProductPostingGroup.Get(NoToUse) then begin
+    //         GenProductPostingGroup.Init();
+    //         GenProductPostingGroup.Code := NoToUse;
+    //         GenProductPostingGroup.Description := NoToUse;
+    //         GenProductPostingGroup.Insert()
+    //     end;
+    // end;
 
     // procedure CreateResource(var Resource: Record Resource; ResourceNo: Code[20]; VATBusPostingGroup: Code[20])
     procedure CreateResource(var Resource: Record Resource; ResourceNo: Code[20])

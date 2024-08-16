@@ -14,7 +14,6 @@ permissionset 50000 GeneratedPermission
         codeunit "DOK Sales Post Subs"=X,
         codeunit "DOK Test Fixtures Sales"=X,
         codeunit "DOK Test Helpers"=X,
-        codeunit "DOK Test Helpers Sales"=X,
         codeunit "DOK Test Sales Orders"=X,
         codeunit "DOK Test Tinker"=X,
         codeunit "DOK Test Utilities"=X;
