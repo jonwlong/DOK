@@ -161,6 +161,4 @@ codeunit 50003 "DOK Test Fixtures Sales"
         until SalesLine.Next() = 0;
     end;
 
-    var
-        TestUtilities: Codeunit "DOK Test Utilities";
 }
