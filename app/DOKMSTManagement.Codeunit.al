@@ -35,7 +35,7 @@ codeunit 50009 "DOK MST Management"
             until MST.Next() = 0;
     end;
 
-    procedure PostOrdersCreatedFromMST(MSTSalesHeader: Record "Sales Header")
+    procedure PostShipOrdersCreatedFromMST(MSTSalesHeader: Record "Sales Header")
     var
         SalesHeader: Record "Sales Header";
         SalesPost: Codeunit "Sales-Post";

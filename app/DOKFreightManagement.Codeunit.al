@@ -17,7 +17,6 @@ codeunit 50006 "DOK Freight Management"
         SalesLine: Record "Sales Line";
         Setup: Record "DOK Setup";
     begin
-        // Add a Resource line to the Sales Order with line no 999999
         Setup.Get();
         SalesLine.Init();
         SalesLine.Validate("Document Type", SalesLine."Document Type"::Order);
