@@ -34,7 +34,27 @@ codeunit 50003 "DOK Test Fixtures Sales"
             SalesLine.Validate(Quantity, 1);
     end;
 
-    procedure CreateSalesLines(SalesHeader: Record "Sales Header"; NumberOfLines: Integer)
+    procedure CreateSalesLine(Quantity: Decimal): Record "Sales Line"
+    var
+        SalesLine: Record "Sales Line";
+    begin
+        SalesLine.Init();
+        SalesLine."Document Type" := SalesLine."Document Type"::Order;
+        SalesLine."Document No." := GetRandomSalesHeaderOfTypeOrder()."No.";
+        SalesLine.Type := SalesLine.Type::Item;
+        SalesLine."No." := GetRandomItem()."No.";
+        SalesLine.Validate(Quantity, 1);
+    end;
+
+    procedure GetRandomSalesHeaderOfTypeOrder() SalesHeader: Record "Sales Header"
+    begin
+        SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::Order);
+        SalesHeader.FindSet();
+        SalesHeader.Next(Random(SalesHeader.Count));
+        exit(SalesHeader);
+    end;
+
+    procedure AddSalesLinesToSalesHeader(SalesHeader: Record "Sales Header"; NumberOfLines: Integer)
     var
         SalesLine: Record "Sales Line";
         i: Integer;
@@ -52,7 +72,7 @@ codeunit 50003 "DOK Test Fixtures Sales"
         MSTOrderNo: Code[20];
     begin
         SalesHeader := CreateSalesOrder();
-        CreateSalesLines(SalesHeader, NumberOfSalesLines);
+        AddSalesLinesToSalesHeader(SalesHeader, NumberOfSalesLines);
         CreateMSTOrders(SalesHeader, NumberOfMSTOrders);
         MSTOrderNo := SalesHeader."No.";
         MSTMgt.CreateOrdersFromMST(SalesHeader);
@@ -139,6 +159,8 @@ codeunit 50003 "DOK Test Fixtures Sales"
                 NumberOfIterations += 1;
             until NumberOfIterations = NumberOfMSTOrders;
         until SalesLine.Next() = 0;
-
     end;
+
+    var
+        TestUtilities: Codeunit "DOK Test Utilities";
 }

@@ -36,7 +36,7 @@ codeunit 50001 "DOK Test Sales Orders"
 
         // [GIVEN] a Sales Order with 1 Sales Line
         SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.CreateSalesLines(SalesHeader, 1);
+        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
         SalesHeader.Ship := true;
         SalesHeader.Invoice := true;
         SalesHeader.Modify(true);
@@ -59,11 +59,25 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesHeader := TestFixturesSales.CreateSalesOrder();
 
         // [WHEN] When we add a new line
-        TestFixturesSales.CreateSalesLines(SalesHeader, 1);
+        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
 
         // [THEN] Then Expected Output is the Orginal Order Qty. is populated with the same value as the Quantity field 
         TestHelpers.AreEqual(SalesLine."DOK Original Order Qty.", SalesLine.Quantity, 'Original Quantity is not populated with the same value as the Quantity field');
     end;
+
+    [TEST]
+    procedure Test_OriginalQuantityIsPopulatedOnNewLine()
+    var
+        SalesLine: Record "Sales Line";
+    begin
+        // [GIVEN] A Sales Line of type Order
+        SalesLine := TestFixturesSales.CreateSalesLine(4);
+
+        // [THEN] Then Expected Output is the Orginal Order Qty. is populated with the same value as the Quantity field 
+        TestHelpers.AreEqual(SalesLine."DOK Original Order Qty.", SalesLine.Quantity, 'Original Quantity is not populated with the same value as the Quantity field');
+
+    end;
+
 
     [Test]
     procedure Test_OriginalQuantityIsNotModifiedAfterQuantityModified()
@@ -76,7 +90,7 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesHeader := TestFixturesSales.CreateSalesOrder();
 
         // [WHEN] When we add a new line
-        TestFixturesSales.CreateSalesLines(SalesHeader, 1);
+        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
 
         // [WHEN] When we modify the Quantity
         SalesLine.Get(SalesLine."Document Type"::Order, SalesHeader."No.", 10000);
@@ -98,7 +112,7 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesHeader := TestFixturesSales.CreateSalesOrder();
 
         // [WHEN] When we add a new line and post the Sales Order
-        TestFixturesSales.CreateSalesLines(SalesHeader, 1);
+        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
         SalesHeader.PostShipMSTOrder();
 
         // [THEN] The Orginal Order Qty. is populated with the same value as the Quantity field for each Sales Invoice Line
@@ -119,7 +133,7 @@ codeunit 50001 "DOK Test Sales Orders"
     begin
         // [GIVEN] A Sales Order with 1 Sales Line
         SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.CreateSalesLines(SalesHeader, 1);
+        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
 
         // [WHEN] When we release the order
         ReleaseSalesDoc.Run(SalesHeader);
@@ -140,7 +154,7 @@ codeunit 50001 "DOK Test Sales Orders"
     begin
         // [GIVEN] A Sales Order with 1 Sales Line
         SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.CreateSalesLines(SalesHeader, 10);
+        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 10);
 
         // [WHEN] When we release the order
         ReleaseSalesDoc.Run(SalesHeader);
@@ -161,7 +175,7 @@ codeunit 50001 "DOK Test Sales Orders"
     begin
         // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
         SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.CreateSalesLines(SalesHeader, 1);
+        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
         TestFixturesSales.CreateMSTOrders(SalesHeader, 2);
 
         // [WHEN] we get the sum of the quantity on the MSTs
@@ -183,7 +197,7 @@ codeunit 50001 "DOK Test Sales Orders"
     begin
         // [GIVEN] A Sales Order with 2 Sales Lines
         SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.CreateSalesLines(SalesHeader, 2);
+        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 2);
 
         // [WHEN] we add 4 MSTs to each line
         TestFixturesSales.CreateMSTOrders(SalesHeader, 4);
@@ -215,7 +229,7 @@ codeunit 50001 "DOK Test Sales Orders"
 
         // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
         SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.CreateSalesLines(SalesHeader, 1);
+        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
         TestFixturesSales.CreateMSTOrders(SalesHeader, 2);
 
         // [WHEN] we run the custom MST order creation procedure
@@ -254,7 +268,7 @@ codeunit 50001 "DOK Test Sales Orders"
 
         // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
         SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.CreateSalesLines(SalesHeader, 1);
+        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
         TestFixturesSales.CreateMSTOrders(SalesHeader, 2);
 
         // [WHEN] we post the Sales Order
@@ -277,7 +291,7 @@ codeunit 50001 "DOK Test Sales Orders"
 
         // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
         SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.CreateSalesLines(SalesHeader, 2);
+        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 2);
         TestFixturesSales.CreateMSTOrders(SalesHeader, 4);
 
         // [WHEN] we post the Sales Order
@@ -306,7 +320,7 @@ codeunit 50001 "DOK Test Sales Orders"
 
         // [GIVEN] A Sales Order with 1 Sales Line and 4 MSTs each
         SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.CreateSalesLines(SalesHeader, 1);
+        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
         TestFixturesSales.CreateMSTOrders(SalesHeader, 4);
 
         // [WHEN] we post the Sales Order
@@ -342,7 +356,7 @@ codeunit 50001 "DOK Test Sales Orders"
 
         // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
         SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.CreateSalesLines(SalesHeader, 1);
+        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
         TestFixturesSales.CreateMSTOrders(SalesHeader, 4);
 
         // [WHEN] we post the Sales Order
@@ -385,7 +399,7 @@ codeunit 50001 "DOK Test Sales Orders"
 
         // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
         SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.CreateSalesLines(SalesHeader, 1);
+        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
         TestFixturesSales.CreateMSTOrders(SalesHeader, 4);
 
         // [WHEN] we post the Sales Order
