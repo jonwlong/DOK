@@ -168,7 +168,7 @@ codeunit 50001 "DOK Test Sales Orders"
     end;
 
     [Test]
-    procedure Test_CreateMSTOrderUpdatesRelatedOrderLineQuantity2MSTs()
+    procedure Test_CreatingMSTOrdersUpdatesRelatedOrderLineQuantity2MSTs()
     var
         SalesHeader: Record "Sales Header";
         MST: Record "DOK Multiple Ship-to Orders";
