@@ -173,11 +173,12 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesHeader: Record "Sales Header";
         MST: Record "DOK Multiple Ship-to Orders";
         SalesLine: Record "Sales Line";
+        MSTMgt: Codeunit "DOK MST Management";
     begin
         // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
         SalesHeader := TestFixturesSales.CreateSalesOrder();
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
-        TestFixturesSales.CreateMSTOrders(SalesHeader, 2);
+        MSTMgt.CreateMSTOrders(SalesHeader, 2);
 
         // [WHEN] we get the sum of the quantity on the MSTs
         SalesLine.Get(SalesLine."Document Type"::Order, SalesHeader."No.", 10000);

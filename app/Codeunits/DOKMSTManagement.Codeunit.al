@@ -35,6 +35,40 @@ codeunit 50009 "DOK MST Management"
             until MST.Next() = 0;
     end;
 
+    procedure CreateMSTOrders(SalesHeader: Record "Sales Header"; NumberOfMSTOrders: Integer);
+    var
+        MSTOrders: Record "DOK Multiple Ship-to Orders";
+        SalesLine: Record "Sales Line";
+        Util: Codeunit "DOK Test Utilities";
+        NumberOfIterations: Integer;
+    begin
+        // populate MSTOrders with random address data
+        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetRange(Type, SalesLine.Type::Item);
+        SalesLine.FindSet();
+        repeat
+            NumberOfIterations := 0;
+            repeat
+                Clear(MSTOrders);
+                MSTOrders.Init();
+                MSTOrders."Order No." := SalesHeader."No.";
+                MSTOrders."Line No." := SalesLine."Line No.";
+                MSTOrders."Ship-to Name" := CopyStr(Util.GetRandomString(8), 1, MaxStrLen(MSTOrders."Ship-to Name"));
+                MSTOrders."Ship-to Address" := CopyStr(Util.GetRandomString(8), 1, MaxStrLen(MSTOrders."Ship-to Address"));
+                MSTOrders."Ship-to City" := CopyStr(Util.GetRandomString(8), 1, MaxStrLen(MSTOrders."Ship-to City"));
+                MSTOrders."Ship-to State" := CopyStr(Util.GetRandomString(8), 1, MaxStrLen(MSTOrders."Ship-to State"));
+                MSTOrders."Ship-to Post Code" := '84454';
+                MSTOrders."Ship-to Country" := 'US';
+                MSTOrders."Ship-to Phone No." := '333.333.3333';
+                MSTOrders."Ship-to Email" := 'bob@bob.com';
+                MSTOrders.Validate(Quantity, Random(100));
+                MSTOrders.Insert(true);
+                NumberOfIterations += 1;
+            until NumberOfIterations = NumberOfMSTOrders;
+        until SalesLine.Next() = 0;
+    end;
+
     procedure PostShipOrdersCreatedFromMST(MSTSalesHeader: Record "Sales Header")
     var
         SalesHeader: Record "Sales Header";
