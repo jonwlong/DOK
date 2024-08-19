@@ -42,7 +42,7 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesHeader.Modify(true);
 
         // [WHEN] we post the Sales Order
-        SalesHeader.PostShipMSTOrder();
+        SalesHeader.PostShipMSTOrders();
         PostedWithoutErrors := GetLastErrorText() = '';
 
         // [THEN] the Sales Order is posted without errors
@@ -114,7 +114,7 @@ codeunit 50001 "DOK Test Sales Orders"
 
         // [WHEN] When we add a new line and post the Sales Order
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
-        SalesHeader.PostShipMSTOrder();
+        SalesHeader.PostShipMSTOrders();
 
         // [THEN] The Orginal Order Qty. is populated with the same value as the Quantity field for each Sales Invoice Line
         SalesInvoiceLine.SetRange("Document No.", SalesHeader."DOK MST Order No.");
@@ -153,7 +153,7 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesLine: Record "Sales Line";
         ReleaseSalesDoc: Codeunit "Release Sales Document";
     begin
-        // [GIVEN] A Sales Order with 1 Sales Line
+        // [GIVEN] A Sales Order with 10 Sales Lines
         SalesHeader := TestFixturesSales.CreateSalesOrder();
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 10);
 
@@ -162,279 +162,152 @@ codeunit 50001 "DOK Test Sales Orders"
 
         // [THEN] The Sales Header contains a Freight line 
         TestHelpers.AssertTrue(SalesLine.Get(SalesLine."Document Type"::Order, SalesHeader."No.", 999999), 'Freight Sales Line not found');
+
         // [THEN] The Freight line has a Quantity > 0
         TestHelpers.AssertTrue(SalesLine.Quantity > 0, 'Freight Quantity is not greater than 0');
 
     end;
 
     [Test]
-    procedure Test_CreatingMSTOrdersUpdatesRelatedOrderLineQuantity2MSTs()
+    procedure Test_CreateMSTEntriesFromSalesOrder()
     var
         SalesHeader: Record "Sales Header";
-        MST: Record "DOK Multiple Ship-to Orders";
+        MST: Record "DOK Multiple Ship-to Entries";
         SalesLine: Record "Sales Line";
         MSTMgt: Codeunit "DOK MST Management";
     begin
         // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
         SalesHeader := TestFixturesSales.CreateSalesOrder();
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
-        MSTMgt.CreateMSTOrders(SalesHeader, 2);
 
-        // [WHEN] we get the sum of the quantity on the MSTs
+        // [WHEN] we create MST Entries
+        MSTMgt.CreateMockMSTOrders(SalesHeader."No.", 2);
+
+        // [THEN] The quantity on the Sales Order line should reflect the total quantity of the MSTs
         SalesLine.Get(SalesLine."Document Type"::Order, SalesHeader."No.", 10000);
         MST.SetRange("Order No.", SalesHeader."No.");
         MST.SetRange("Line No.", 10000);
         MST.CalcSums(Quantity);
-
-        // [THEN] The quantity on the Sales Order line should reflect the total quantity of the MSTs
         TestHelpers.AssertTrue(SalesLine.Quantity = MST.Quantity, 'Total Quantity is not %1, It''s %2', SalesLine.Quantity, MST.Quantity);
+
+        // [THEN] There should be 2 MSTs
+        TestHelpers.AssertTrue(MST.Count = 2, 'Expected 2 MSTs to be created, but found %1', MST.Count);
     end;
 
     [Test]
-    procedure Test_CreateMSTOrderUpdatesRelatedOrderLineQuantity8MSTs()
+    procedure Test_CreateOrdersFromMSTEntries()
     var
+        MSTSalesHeader: Record "Sales Header";
         SalesHeader: Record "Sales Header";
-        MST: Record "DOK Multiple Ship-to Orders";
-        SalesLine: Record "Sales Line";
-    begin
-        // [GIVEN] A Sales Order with 2 Sales Lines
-        SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 2);
-
-        // [WHEN] we add 4 MSTs to each line
-        TestFixturesSales.CreateMSTOrders(SalesHeader, 4);
-
-        // [THEN] The quantity on the Sales Order lines reflect the total quantity of the related MSTs
-        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
-        SalesLine.SetRange("Document No.", SalesHeader."No.");
-        SalesLine.SetRange(Type, SalesLine.Type::Item);
-        if SalesLine.FindSet() then
-            repeat
-                MST.SetRange("Order No.", SalesHeader."No.");
-                MST.SetRange("Line No.", SalesLine."Line No.");
-                MST.CalcSums(Quantity);
-                TestHelpers.AssertTrue(SalesLine.Quantity = MST.Quantity, 'Total Quantity is not %1, It''s %2', MST.Quantity, SalesLine.Quantity);
-            until SalesLine.Next() = 0;
-    end;
-
-    [Test]
-    procedure Test_CreateOrdersFromMSTResultsIn2OrdersAndQuantityMatchesOriginalOrder()
-    var
-        SalesHeader: Record "Sales Header";
-        MST: Record "DOK Multiple Ship-to Orders";
-        SalesLine: Record "Sales Line";
         MSTManagement: Codeunit "DOK MST Management";
-        MSTOrderNo: Code[20];
-        QtyOnOrderLinesCreatedFromMSTOrders: Decimal;
     begin
         Initialze();
 
         // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
-        SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
-        TestFixturesSales.CreateMSTOrders(SalesHeader, 2);
+        MSTSalesHeader := TestFixturesSales.CreateMSTSalesOrderWithMSTEntries(1, 2);
 
         // [WHEN] we run the custom MST order creation procedure
-        MSTOrderNo := SalesHeader."No.";
-        MSTManagement.CreateOrdersFromMST(SalesHeader);
+        MSTSalesHeader.CreateOrdersFromMST();
 
-        // [THEN] 2 Sales Orders where the "DOK MST Order No." = the SalesHeader No.
-        Clear(SalesHeader);
-        SalesHeader.SetRange("DOK MST Order No.", MSTOrderNo);
-        TestHelpers.AssertTrue(SalesHeader.Count = 2, 'Expected 2 Sales Orders to be created, but found %1', SalesHeader.Count);
-        // Assert that the Sales Orders created in the posting have the qty on the associated sales line from the MSTs
-        SalesHeader.Reset();
-        SalesHeader.SetRange("DOK MST Order No.", MSTOrderNo);
-        if SalesHeader.FindSet() then
-            repeat
-                SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
-                SalesLine.SetRange("Document No.", SalesHeader."No.");
-                SalesLine.SetRange(Type, SalesLine.Type::Item);
-                SalesLine.CalcSums(Quantity);
-                QtyOnOrderLinesCreatedFromMSTOrders += SalesLine.Quantity;
-            until SalesHeader.Next() = 0;
-        // Assert that the total quantity on the Sales Order lines created from the MSTs is equal to the total quantity on the MSTs
-        MST.SetRange("Order No.", MSTOrderNo);
-        MST.CalcSums(Quantity);
-        TestHelpers.AssertTrue(QtyOnOrderLinesCreatedFromMSTOrders = MST.Quantity, 'Total Quantity is not %1, It''s %2', MST.Quantity, QtyOnOrderLinesCreatedFromMSTOrders);
+        // [THEN] 2 Sales Orders should have been created
+        SalesHeader.SetRange("DOK MST Order No.", MSTSalesHeader."No.");
+        TestHelpers.AssertTrue(SalesHeader.Count = 2, 'Expected 2 Sales Orders to be created. %1 were created', SalesHeader.Count);
+
+        // [THEN] Sales Orders created in the posting have the qty on the associated sales line from the MSTs
+        TestHelpers.AssertTrue(MSTManagement.MSTEntriesAndCreatedSalesOrdersReconcile(MSTSalesHeader."No."), 'The MST Entries and the created Sales Orders do not reconcile');
     end;
 
     [Test]
-    procedure Test_PostOrdersCreatedFromMSTsGenerate()
+    procedure Test_PostShipOrdersCreatedFromMSTOrder2Shipments()
     var
+        MSTSalesHeader: Record "Sales Header";
         SalesHeader: Record "Sales Header";
-        MSTOrderNo: Code[20];
-    begin
-
-        Initialze();
-
-        // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
-        SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
-        TestFixturesSales.CreateMSTOrders(SalesHeader, 2);
-
-        // [WHEN] we post the Sales Order
-        MSTOrderNo := SalesHeader."No.";
-        SalesHeader.PostShipMSTOrder();
-
-        // [THEN] 2 Sales Invoices are posted from the Sales Orders created from the MSTs
-        SalesHeader.SetRange("DOK MST Order No.", MSTOrderNo);
-
-    end;
-
-    [Test]
-    procedure Test_PostOrdersCreatedFrom2Lines8MSTs()
-    var
-        SalesHeader: Record "Sales Header";
-        MSTOrderNo: Code[20];
-    begin
-
-        Initialze();
-
-        // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
-        SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 2);
-        TestFixturesSales.CreateMSTOrders(SalesHeader, 4);
-
-        // [WHEN] we post the Sales Order
-        MSTOrderNo := SalesHeader."No.";
-        SalesHeader.PostShipMSTOrder();
-
-        // [THEN] 2 Sales Invoices are posted from the Sales Orders created from the MSTs
-        SalesHeader.SetRange("DOK MST Order No.", MSTOrderNo);
-
-    end;
-
-    [Test]
-    [HandlerFunctions('PostBatchSalesPostingMessageHandler')]
-
-    procedure Test_PostOrdersCreatedFrom1Line4MSTPostedCreates8ShipLines()
-    var
-        SalesHeader: Record "Sales Header";
-        SalesShipLine: Record "Sales Shipment Line";
-        SalesShipmentHeader: Record "Sales Shipment Header";
-        BatchPostMSTSalesOrders: Codeunit "DOK Batch Post MST SalesOrders";
-        MSTMgt: Codeunit "DOK MST Management";
-        MSTOrderNo: Code[20];
-    begin
-
-        Initialze();
-
-        // [GIVEN] A Sales Order with 1 Sales Line and 4 MSTs each
-        SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
-        TestFixturesSales.CreateMSTOrders(SalesHeader, 4);
-
-        // [WHEN] we post the Sales Order
-        MSTOrderNo := SalesHeader."No.";
-        MSTMgt.CreateOrdersFromMST(SalesHeader);
-        BatchPostMSTSalesOrders.PostShipMSTSalesOrders(MSTOrderNo);
-
-        // [THEN] 4 sales Shipment Headers should have been created.
-        SalesShipmentHeader.SetRange("DOK MST Order No.", MSTOrderNo);
-        TestHelpers.AssertTrue(SalesShipmentHeader.Count = 4, 'Expected 4 Sales Shipment Headers to be created. Only %1 were created', SalesShipmentHeader.Count);
-
-        // [THEN] 8 shipment lines should have been created
-        SalesShipLine.SetRange("DOK MST Order No.", MSTOrderNo);
-        TestHelpers.AssertTrue(SalesShipLine.Count = 8, 'Expected 8 Sales Shipment Lines to be created. Only %1 were created', SalesShipLine.Count);
-
-    end;
-
-    [Test]
-    [HandlerFunctions('PostBatchSalesPostingMessageHandler')]
-
-    procedure Test_CombineMSTShipmentTo1Invoice()
-    var
-        SalesHeader: Record "Sales Header";
-        SalesInvoiceHeader: Record "Sales Header";
-        SalesShipLine: Record "Sales Shipment Line";
-        SalesShipmentHeader: Record "Sales Shipment Header";
-        BatchPostMSTSalesOrders: Codeunit "DOK Batch Post MST SalesOrders";
-        MSTMgt: Codeunit "DOK MST Management";
-        MSTOrderNo: Code[20];
-    begin
-
-        Initialze();
-
-        // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
-        SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
-        TestFixturesSales.CreateMSTOrders(SalesHeader, 4);
-
-        // [WHEN] we post the Sales Order
-        MSTOrderNo := SalesHeader."No.";
-        MSTMgt.CreateOrdersFromMST(SalesHeader);
-        BatchPostMSTSalesOrders.PostShipMSTSalesOrders(MSTOrderNo);
-        BatchPostMSTSalesOrders.CreateInvoiceWithCombinedMSTShipments(MSTOrderNo);
-
-        // [THEN] 4 sales Shipment Headers should have been created.
-        SalesShipmentHeader.SetRange("DOK MST Order No.", MSTOrderNo);
-        TestHelpers.AssertTrue(SalesShipmentHeader.Count = 4, 'Expected 4 Sales Shipment Headers to be created. Only %1 were created', SalesShipmentHeader.Count);
-
-        // [THEN] 8 shipment lines should have been created
-        SalesShipLine.SetRange("DOK MST Order No.", MSTOrderNo);
-        TestHelpers.AssertTrue(SalesShipLine.Count = 8, 'Expected 8 Sales Shipment Lines to be created. Only %1 were created', SalesShipLine.Count);
-
-        // [THEN] 1 sales order of type invoice should have been created
-        SalesInvoiceHeader.SetRange("DOK MST Order No.", MSTOrderNo);
-        SalesInvoiceHeader.SetRange("Document Type", SalesInvoiceHeader."Document Type"::Invoice);
-        TestHelpers.AssertTrue(SalesInvoiceHeader.Count = 1, 'Expected 1 Sales Invoice Header to be created. Only %1 were created', SalesInvoiceHeader.Count);
-
-    end;
-
-    [Test]
-    [HandlerFunctions('PostBatchSalesPostingMessageHandler')]
-
-    procedure Test_CombineMSTShipmentTo1InvoiceContains12Lines()
-    var
-        SalesHeader: Record "Sales Header";
-        SalesInvoiceHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
-        SalesShipLine: Record "Sales Shipment Line";
-        SalesShipmentHeader: Record "Sales Shipment Header";
-        BatchPostMSTSalesOrders: Codeunit "DOK Batch Post MST SalesOrders";
-        MSTMgt: Codeunit "DOK MST Management";
-        MSTOrderNo: Code[20];
     begin
 
         Initialze();
 
-        // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
-        SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
-        TestFixturesSales.CreateMSTOrders(SalesHeader, 4);
+        // [GIVEN] A Sales Order with 1 Sales Line with 2 MSTs each
+        MSTSalesHeader := TestFixturesSales.CreateMSTSalesOrderReadyToPost(1, 2);
 
-        // [WHEN] we post the Sales Order
-        MSTOrderNo := SalesHeader."No.";
-        MSTMgt.CreateOrdersFromMST(SalesHeader);
-        BatchPostMSTSalesOrders.PostShipMSTSalesOrders(MSTOrderNo);
-        BatchPostMSTSalesOrders.CreateInvoiceWithCombinedMSTShipments(MSTOrderNo);
+        // [WHEN] we post the Sales Orders
+        MSTSalesHeader.PostShipMSTOrders();
 
-        // [THEN] 4 sales Shipment Headers should have been created.
-        SalesShipmentHeader.SetRange("DOK MST Order No.", MSTOrderNo);
-        TestHelpers.AssertTrue(SalesShipmentHeader.Count = 4, 'Expected 4 Sales Shipment Headers to be created. Only %1 were created', SalesShipmentHeader.Count);
-
-        // [THEN] 8 shipment lines should have been created
-        SalesShipLine.SetRange("DOK MST Order No.", MSTOrderNo);
-        TestHelpers.AssertTrue(SalesShipLine.Count = 8, 'Expected 8 Sales Shipment Lines to be created. Only %1 were created', SalesShipLine.Count);
-
-        // [THEN] 1 sales order of type invoice should have been created
-        SalesInvoiceHeader.SetRange("DOK MST Order No.", MSTOrderNo);
-        SalesInvoiceHeader.SetRange("Document Type", SalesInvoiceHeader."Document Type"::Invoice);
-        TestHelpers.AssertTrue(SalesInvoiceHeader.Count = 1, 'Expected 1 Sales Invoice Header to be created. Only %1 were created', SalesInvoiceHeader.Count);
-
-        // [THEN] 12 sales invoice lines should have been created
-        SalesInvoiceHeader.FindFirst();
-        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Invoice);
-        SalesLine.SetRange("Document No.", SalesInvoiceHeader."No.");
-        TestHelpers.AssertTrue(SalesLine.Count = 12, 'Expected 12 Sales Invoice Lines to be created. %1 were created', SalesLine.Count);
+        // [THEN] 2 Sales Orders should each have all lines shipped
+        SalesHeader.SetRange("DOK MST Order No.", MSTSalesHeader."No.");
+        SalesHeader.FindSet();
+        repeat
+            SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
+            SalesLine.SetRange("Document No.", SalesHeader."No.");
+            SalesLine.FindSet();
+            repeat
+                TestHelpers.AssertTrue(SalesLine.Quantity = SalesLine."Quantity Shipped", 'Quantity Shipped is not equal to Quantity on Sales Line');
+            until SalesLine.Next() = 0;
+        until SalesHeader.Next() = 0;
 
     end;
 
     [Test]
-    [HandlerFunctions('PostBatchSalesPostingMessageHandler')]
+    procedure Test_PostShipOrdersCreatedFromMSTOrder20Shipments()
+    var
+        MSTSalesHeader: Record "Sales Header";
+        SalesShipmentHeader: Record "Sales Shipment Header";
+        SalesShipLine: Record "Sales Shipment Line";
+    begin
 
-    procedure Test_CombineMSTShipmentTo1InvoiceContains12LinesPostInvoice()
+        Initialze();
+
+        // [GIVEN] A Sales Order with 2 Sales Line with 20 MSTs each
+        MSTSalesHeader := TestFixturesSales.CreateMSTSalesOrderReadyToPost(2, 10);
+
+        // [WHEN] we post the Sales Orders
+        MSTSalesHeader.PostShipMSTOrders();
+
+        // [THEN] 4 sales Shipment Headers should have been created.
+        SalesShipmentHeader.SetRange("DOK MST Order No.", MSTSalesHeader."No.");
+        TestHelpers.AssertTrue(SalesShipmentHeader.Count = 20, 'Expected 4 Sales Shipment Headers to be created. Only %1 were created', SalesShipmentHeader.Count);
+
+        // [THEN] 8 shipment lines should have been created
+        SalesShipLine.SetRange("DOK MST Order No.", MSTSalesHeader."No.");
+        TestHelpers.AssertTrue(SalesShipLine.Count = 40, 'Expected 8 Sales Shipment Lines to be created. Only %1 were created', SalesShipLine.Count);
+
+    end;
+
+    [Test]
+    procedure Test_CreateMSTInvoice()
+    var
+        MSTSalesHeader: Record "Sales Header";
+        SalesInvoiceHeader: Record "Sales Header";
+        SalesShipLine: Record "Sales Shipment Line";
+        SalesShipmentHeader: Record "Sales Shipment Header";
+        MSTMgt: Codeunit "DOK MST Management";
+    begin
+
+        Initialze();
+
+        // [GIVEN] A Sales Order with 2 Sales Line with 20 MSTs each
+        MSTSalesHeader := TestFixturesSales.CreateMSTSalesOrderWithPostedShipments(1, 10);
+
+        // [WHEN] we create an invoice from the MST Order
+        MSTMgt.CreateInvoiceWithCombinedMSTShipments(MSTSalesHeader."No.");
+
+        // [THEN] 10 sales Shipment Headers should have been created.
+        SalesShipmentHeader.SetRange("DOK MST Order No.", MSTSalesHeader."No.");
+        TestHelpers.AssertTrue(SalesShipmentHeader.Count = 10, 'Expected 10 Sales Shipment Headers to be created. %1 were created', SalesShipmentHeader.Count);
+
+        // [THEN] 8 shipment lines should have been created
+        SalesShipLine.SetRange("DOK MST Order No.", MSTSalesHeader."No.");
+        TestHelpers.AssertTrue(SalesShipLine.Count = 20, 'Expected 8 Sales Shipment Lines to be created. %1 were created', SalesShipLine.Count);
+
+        // [THEN] 1 sales order of type invoice should have been created
+        SalesInvoiceHeader.SetRange("DOK MST Order No.", MSTSalesHeader."No.");
+        SalesInvoiceHeader.SetRange("Document Type", SalesInvoiceHeader."Document Type"::Invoice);
+        TestHelpers.AssertTrue(SalesInvoiceHeader.Count = 1, 'Expected 1 Sales Invoice Header to be created. Only %1 were created', SalesInvoiceHeader.Count);
+
+    end;
+
+    [Test]
+    procedure Test_EndToEndPostMSTInvoice()
     var
         SalesHeader: Record "Sales Header";
         PostedSalesInvoice: Record "Sales Invoice Header";
@@ -460,34 +333,30 @@ codeunit 50001 "DOK Test Sales Orders"
         TestHelpers.AssertTrue(PostedSalesInvoiceLine.Count = 12, 'Expected 12 Sales Invoice Lines to be created. %1 were created', PostedSalesInvoiceLine.Count);
     end;
 
-    [Test]
-    [HandlerFunctions('PostBatchSalesPostingMessageHandler')]
+    // [TEST]
+    // procedure Test_PageActionCreateInvoice()
+    // var
+    //     SalesHeader: Record "Sales Header";
+    //     SalesOrderPage: TestPage "Sales Order";
+    // begin
+    //     // [GIVEN] A SalesOrderPage with an active Sales Order 1 line 2 MSTs
+    //     SalesHeader := TestFixturesSales.CreateSalesOrder();
+    //     TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
+    //     TestFixturesSales.CreateMSTEntries(SalesHeader, 2);
 
-    procedure Test_CombineMSTShipmentTo1InvoiceContains24LinesPostInvoice()
-    var
-        SalesHeader: Record "Sales Header";
-        PostedSalesInvoice: Record "Sales Invoice Header";
-        PostedSalesInvoiceLine: Record "Sales Invoice Line";
-        SalesPost: Codeunit "Sales-Post";
-    begin
+    //     // [WHEN] We run the action "Post & Ship MST Invoice"
+    //     // run action on page
+    //     SalesOrderPage.OpenNew();
+    //     SalesOrderPage.GoToRecord(SalesHeader);
+    //     SalesOrderPage."Post & Ship MST Invoice_Promoted".Invoke();
 
-        Initialze();
+    //     // [THEN] The Sales Invoice is created with MSTOrderNo
+    //     SalesHeader.SetRange("DOK MST Order No.", SalesHeader."No.");
+    //     TestHelpers.AssertTrue(not SalesHeader.IsEmpty, 'Sales Invoice was not posted with MST Order No. %1', SalesHeader."DOK MST Order No.");
 
-        // [GIVEN] A Sales Order with 2 Sales Line and 4 MSTs for each Sales Line
-        SalesHeader := TestFixturesSales.CreateSalesInvoiceWithMSTShipmentLines(SalesHeader, 2, 4);
 
-        // [WHEN] we post the Sales Order of type Invoice
-        SalesPost.Run(SalesHeader);
+    // end;
 
-        // [THEN] The Sales Invoice is posted with MSTOrderNo
-        PostedSalesInvoice.SetRange("DOK MST Order No.", SalesHeader."DOK MST Order No.");
-        TestHelpers.AssertTrue(not PostedSalesInvoice.IsEmpty, 'Sales Invoice was not posted with MST Order No. %1', SalesHeader."DOK MST Order No.");
-
-        // [THEN] the invoice contains 24 lines
-        PostedSalesInvoice.FindFirst();
-        PostedSalesInvoiceLine.SetRange("Document No.", PostedSalesInvoice."No.");
-        TestHelpers.AssertTrue(PostedSalesInvoiceLine.Count = 24, 'Expected 24 Sales Invoice Lines to be created. %1 were created', PostedSalesInvoiceLine.Count);
-    end;
 
     //All of your selections were processed
     [MessageHandler]

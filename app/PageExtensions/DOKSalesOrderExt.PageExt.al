@@ -15,15 +15,12 @@ pageextension 50000 "DOK Sales Order Ext" extends "Sales Order"
                 Image = Document;
                 trigger OnAction()
                 var
-                    MST: Record "DOK Multiple Ship-to Orders";
                     MSTMgt: Codeunit "DOK MST Management";
-                    DOKMultipleShipToCard: Page "DOK Multiple Ship-to List";
                 begin
-                    MSTMgt.CreateMSTOrders(Rec, 10);
-                    MST.SetRange("Order No.", Rec."No.");
-                    MST.FindSet();
-                    DOKMultipleShipToCard.SetTableView(MST);
-                    DOKMultipleShipToCard.Run();
+                    MSTMgt.CreateMockMSTOrders(Rec."No.", 10);
+                    MSTMgt.CreateOrdersFromMSTEntries(Rec);
+                    MSTMgt.PostShipOrdersCreatedFromMST(Rec);
+                    MSTMgt.CreateInvoiceWithCombinedMSTShipments(Rec."No.");
                 end;
             }
         }

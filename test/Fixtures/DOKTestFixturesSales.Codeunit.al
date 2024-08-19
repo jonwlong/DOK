@@ -29,6 +29,7 @@ codeunit 50003 "DOK Test Fixtures Sales"
         SalesLine.Validate(Type, SalesLine.Type::Item);
         SalesLine.Validate("No.", GetRandomItem()."No.");
         SalesLine.Validate(Quantity, Random(100));
+        SalesLine."Package Tracking No." := CopyStr(TestUtilities.GetRandomString(8), 1, MaxStrLen(SalesLine."Package Tracking No."));
         SalesLine."Line No." := LineNo;
         if SalesLine.Quantity = 0 then
             SalesLine.Validate(Quantity, 1);
@@ -45,6 +46,7 @@ codeunit 50003 "DOK Test Fixtures Sales"
         SalesLine."Document No." := SalesHeader."No.";
         SalesLine.Type := SalesLine.Type::Item;
         SalesLine."No." := GetRandomItem()."No.";
+        SalesLine."Package Tracking No." := CopyStr(TestUtilities.GetRandomString(8), 1, MaxStrLen(SalesLine."Package Tracking No."));
         SalesLine.Validate(Quantity, 1);
     end;
 
@@ -71,19 +73,47 @@ codeunit 50003 "DOK Test Fixtures Sales"
     procedure CreateSalesInvoiceWithMSTShipmentLines(SalesHeader: Record "Sales Header"; NumberOfSalesLines: Integer; NumberOfMSTOrders: Integer) SalesInvoiceHeader: Record "Sales Header"
     var
         MSTMgt: Codeunit "DOK MST Management";
-        BatchPostMSTSalesOrders: Codeunit "DOK Batch Post MST SalesOrders";
         MSTOrderNo: Code[20];
     begin
         SalesHeader := CreateSalesOrder();
         AddSalesLinesToSalesHeader(SalesHeader, NumberOfSalesLines);
-        CreateMSTOrders(SalesHeader, NumberOfMSTOrders);
+        CreateMSTEntries(SalesHeader, NumberOfMSTOrders);
         MSTOrderNo := SalesHeader."No.";
-        MSTMgt.CreateOrdersFromMST(SalesHeader);
-        BatchPostMSTSalesOrders.PostShipMSTSalesOrders(MSTOrderNo);
-        BatchPostMSTSalesOrders.CreateInvoiceWithCombinedMSTShipments(MSTOrderNo);
+        MSTMgt.CreateOrdersFromMSTEntries(SalesHeader);
+        MSTMgt.PostShipOrdersCreatedFromMST(SalesHeader);
+        MSTMgt.CreateInvoiceWithCombinedMSTShipments(MSTOrderNo);
         SalesInvoiceHeader.SetRange("DOK MST Order No.", MSTOrderNo);
         SalesInvoiceHeader.SetRange("Document Type", SalesInvoiceHeader."Document Type"::Invoice);
         SalesInvoiceHeader.FindFirst();
+    end;
+
+    procedure CreateMSTSalesOrderWithMSTEntries(NumberOfSalesLines: Integer; NumberOfMSTOrders: Integer) SalesHeader: Record "Sales Header"
+    var
+    begin
+        SalesHeader := CreateSalesOrder();
+        AddSalesLinesToSalesHeader(SalesHeader, NumberOfSalesLines);
+        CreateMSTEntries(SalesHeader, NumberOfMSTOrders);
+    end;
+
+    procedure CreateMSTSalesOrderReadyToPost(NumberOfSalesLines: Integer; NumberOfMSTOrders: Integer) SalesHeader: Record "Sales Header"
+    var
+        MSTManagement: Codeunit "DOK MST Management";
+    begin
+        SalesHeader := CreateSalesOrder();
+        AddSalesLinesToSalesHeader(SalesHeader, NumberOfSalesLines);
+        CreateMSTEntries(SalesHeader, NumberOfMSTOrders);
+        MSTManagement.CreateOrdersFromMSTEntries(SalesHeader);
+    end;
+
+    procedure CreateMSTSalesOrderWithPostedShipments(NumberOfSalesLines: Integer; NumberOfMSTOrders: Integer) SalesHeader: Record "Sales Header"
+    var
+        MSTManagement: Codeunit "DOK MST Management";
+    begin
+        SalesHeader := CreateSalesOrder();
+        AddSalesLinesToSalesHeader(SalesHeader, NumberOfSalesLines);
+        CreateMSTEntries(SalesHeader, NumberOfMSTOrders);
+        MSTManagement.CreateOrdersFromMSTEntries(SalesHeader);
+        MSTManagement.PostShipOrdersCreatedFromMST(SalesHeader);
     end;
 
     procedure AddXNumberOfSalesLinesToSalesOrder(SalesHeader: Record "Sales Header"; NumberOfLines: Integer)
@@ -130,13 +160,16 @@ codeunit 50003 "DOK Test Fixtures Sales"
         LastPostedSalesInvoice.Get(NoSeriesLine."Last No. Used");
     end;
 
-    procedure CreateMSTOrders(SalesHeader: Record "Sales Header"; NumberOfMSTOrders: Integer);
+    procedure CreateMSTEntries(SalesHeader: Record "Sales Header"; NumberOfMSTOrders: Integer);
     var
-        MSTOrders: Record "DOK Multiple Ship-to Orders";
+        MSTOrders: Record "DOK Multiple Ship-to Entries";
         SalesLine: Record "Sales Line";
         Util: Codeunit "DOK Test Utilities";
+        MSTMgt: Codeunit "DOK MST Management";
         NumberOfIterations: Integer;
     begin
+        MSTMgt.CreateMockMSTOrders(SalesHeader."No.", NumberOfMSTOrders);
+        exit;
         // populate MSTOrders with random address data
         SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
         SalesLine.SetRange("Document No.", SalesHeader."No.");
@@ -163,5 +196,8 @@ codeunit 50003 "DOK Test Fixtures Sales"
             until NumberOfIterations = NumberOfMSTOrders;
         until SalesLine.Next() = 0;
     end;
+
+    var
+        TestUtilities: Codeunit "DOK Test Utilities";
 
 }

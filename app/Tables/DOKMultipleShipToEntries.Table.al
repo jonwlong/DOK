@@ -1,4 +1,4 @@
-table 50000 "DOK Multiple Ship-to Orders"
+table 50000 "DOK Multiple Ship-to Entries"
 {
     // create a table with address fields with key field Order No., Line No.
     DataClassification = AccountData;
@@ -59,7 +59,7 @@ table 50000 "DOK Multiple Ship-to Orders"
             trigger OnValidate()
             var
                 SalesLine: Record "Sales Line";
-                MST: Record "DOK Multiple Ship-to Orders";
+                MST: Record "DOK Multiple Ship-to Entries";
             begin
                 MST.SetRange("Order No.", Rec."Order No.");
                 MST.SetRange("Line No.", Rec."Line No.");

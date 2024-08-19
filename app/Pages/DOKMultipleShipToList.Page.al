@@ -1,7 +1,7 @@
 page 50000 "DOK Multiple Ship-to List"
 {
     PageType = List;
-    SourceTable = "DOK Multiple Ship-to Orders";
+    SourceTable = "DOK Multiple Ship-to Entries";
     ApplicationArea = All;
     UsageCategory = Lists;
     Caption = 'DOK Multiple Ship to Orders';

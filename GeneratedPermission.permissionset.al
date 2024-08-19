@@ -1,11 +1,10 @@
 permissionset 50000 GeneratedPermission
 {
     Assignable = true;
-    Permissions = tabledata "DOK Multiple Ship-to Orders"=RIMD,
+    Permissions = tabledata "DOK Multiple Ship-to Entries"=RIMD,
         tabledata "DOK Setup"=RIMD,
-        table "DOK Multiple Ship-to Orders"=X,
+        table "DOK Multiple Ship-to Entries"=X,
         table "DOK Setup"=X,
-        codeunit "DOK Batch Post MST SalesOrders"=X,
         codeunit "DOK Freight Management"=X,
         codeunit "DOK Freight Management Subs"=X,
         codeunit "DOK MST Management"=X,
@@ -16,5 +15,7 @@ permissionset 50000 GeneratedPermission
         codeunit "DOK Test Helpers"=X,
         codeunit "DOK Test Sales Orders"=X,
         codeunit "DOK Test Tinker"=X,
-        codeunit "DOK Test Utilities"=X;
+        codeunit "DOK Test Utilities"=X,
+        page "DOK Multiple Ship-to List"=X,
+        page "DOK Setup Card"=X;
 }

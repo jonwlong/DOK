@@ -1,8 +1,8 @@
 codeunit 50009 "DOK MST Management"
 {
-    procedure CreateOrdersFromMST(MSTSalesHeader: Record "Sales Header")
+    procedure CreateOrdersFromMSTEntries(MSTSalesHeader: Record "Sales Header")
     var
-        MST: Record "DOK Multiple Ship-to Orders";
+        MST: Record "DOK Multiple Ship-to Entries";
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
         MSTSalesLine: Record "Sales Line";
@@ -35,16 +35,16 @@ codeunit 50009 "DOK MST Management"
             until MST.Next() = 0;
     end;
 
-    procedure CreateMSTOrders(SalesHeader: Record "Sales Header"; NumberOfMSTOrders: Integer);
+    procedure CreateMockMSTOrders(SalesHeaderNo: Code[20]; NumberOfMSTOrders: Integer);
     var
-        MSTOrders: Record "DOK Multiple Ship-to Orders";
+        MSTOrders: Record "DOK Multiple Ship-to Entries";
         SalesLine: Record "Sales Line";
         Util: Codeunit "DOK Test Utilities";
         NumberOfIterations: Integer;
     begin
         // populate MSTOrders with random address data
         SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
-        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetRange("Document No.", SalesHeaderNo);
         SalesLine.SetRange(Type, SalesLine.Type::Item);
         SalesLine.FindSet();
         repeat
@@ -52,7 +52,7 @@ codeunit 50009 "DOK MST Management"
             repeat
                 Clear(MSTOrders);
                 MSTOrders.Init();
-                MSTOrders."Order No." := SalesHeader."No.";
+                MSTOrders."Order No." := SalesHeaderNo;
                 MSTOrders."Line No." := SalesLine."Line No.";
                 MSTOrders."Ship-to Name" := CopyStr(Util.GetRandomString(8), 1, MaxStrLen(MSTOrders."Ship-to Name"));
                 MSTOrders."Ship-to Address" := CopyStr(Util.GetRandomString(8), 1, MaxStrLen(MSTOrders."Ship-to Address"));
@@ -82,6 +82,45 @@ codeunit 50009 "DOK MST Management"
                 SalesHeader.Modify(true);
                 SalesPost.Run(SalesHeader);
             until SalesHeader.Next() = 0;
+    end;
+
+    procedure CreateInvoiceWithCombinedMSTShipments(MSTOrderNo: Text[20])
+    var
+        SalesHeader: Record "Sales Header";
+        SalesShipLine: Record "Sales Shipment Line";
+        SalesGetShipment: Codeunit "Sales-Get Shipment";
+    begin
+        SalesShipLine.SetRange("DOK MST Order No.", MSTOrderNo);
+        if not SalesShipLine.FindSet() then
+            Error('No Shipments found for MST Order No. %1', MSTOrderNo);
+        SalesHeader.Init();
+        SalesHeader.Validate("Document Type", SalesHeader."Document Type"::Invoice);
+        SalesHeader.Validate("Sell-to Customer No.", SalesShipLine."Sell-to Customer No.");
+        SalesHeader.Validate("DOK MST Order No.", MSTOrderNo);
+        SalesHeader.Insert(true);
+        SalesGetShipment.SetSalesHeader(SalesHeader);
+        SalesGetShipment.CreateInvLines(SalesShipLine);
+    end;
+
+    procedure MSTEntriesAndCreatedSalesOrdersReconcile(MSTSalesHeaderNo: Text[20]): Boolean
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        MSTEntries: Record "DOK Multiple Ship-to Entries";
+        QtyOnOrderLinesCreatedFromMSTOrders: Decimal;
+    begin
+        SalesHeader.SetRange("DOK MST Order No.", MSTSalesHeaderNo);
+        if SalesHeader.FindSet() then
+            repeat
+                SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
+                SalesLine.SetRange("Document No.", SalesHeader."No.");
+                SalesLine.SetRange(Type, SalesLine.Type::Item);
+                SalesLine.CalcSums(Quantity);
+                QtyOnOrderLinesCreatedFromMSTOrders += SalesLine.Quantity;
+            until SalesHeader.Next() = 0;
+        MSTEntries.SetRange("Order No.", MSTSalesHeaderNo);
+        MSTEntries.CalcSums(Quantity);
+        exit(QtyOnOrderLinesCreatedFromMSTOrders = MSTEntries.Quantity);
     end;
 
 }

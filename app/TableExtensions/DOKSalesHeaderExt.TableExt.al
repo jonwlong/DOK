@@ -40,7 +40,7 @@ tableextension 50001 "DOK Sales Header Ext" extends "Sales Header"
 
     procedure HasMSTOrders(): Boolean;
     var
-        MST: Record "DOK Multiple Ship-to Orders";
+        MST: Record "DOK Multiple Ship-to Entries";
     begin
         if Rec."Document Type" <> Rec."Document Type"::Order then
             exit(false);
@@ -48,7 +48,14 @@ tableextension 50001 "DOK Sales Header Ext" extends "Sales Header"
         exit(not MST.IsEmpty);
     end;
 
-    procedure PostShipMSTOrder();
+    procedure CreateOrdersFromMST();
+    var
+        MSTManagement: Codeunit "DOK MST Management";
+    begin
+        MSTManagement.CreateOrdersFromMSTEntries(Rec);
+    end;
+
+    procedure PostShipMSTOrders();
     var
         MSTManagement: Codeunit "DOK MST Management";
     begin
