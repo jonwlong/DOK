@@ -30,6 +30,7 @@ codeunit 50001 "DOK Test Sales Orders"
     procedure Test_PostSalesOrder()
     var
         SalesHeader: Record "Sales Header";
+        SalesPost: Codeunit "Sales-Post";
         PostedWithoutErrors: Boolean;
     begin
         Initialze();
@@ -42,7 +43,7 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesHeader.Modify(true);
 
         // [WHEN] we post the Sales Order
-        SalesHeader.PostShipMSTOrders();
+        SalesPost.Run(SalesHeader);
         PostedWithoutErrors := GetLastErrorText() = '';
 
         // [THEN] the Sales Order is posted without errors
