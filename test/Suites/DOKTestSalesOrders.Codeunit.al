@@ -38,16 +38,16 @@ codeunit 50001 "DOK Test Sales Orders"
         // [GIVEN] a Sales Order with 1 Sales Line
         SalesHeader := TestFixturesSales.CreateSalesOrder();
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
-        SalesHeader.Ship := true;
-        SalesHeader.Invoice := true;
+        SalesHeader.Validate(Ship, true);
+        SalesHeader.Validate(Invoice, true);
         SalesHeader.Modify(true);
 
         // [WHEN] we post the Sales Order
-        SalesPost.Run(SalesHeader);
-        PostedWithoutErrors := GetLastErrorText() = '';
+        PostedWithoutErrors := SalesPost.Run(SalesHeader);
 
         // [THEN] the Sales Order is posted without errors
-        TestHelpers.AssertTrue(PostedWithoutErrors, 'Sales Order was not posted without error %1', GetLastErrorText());
+        TestHelpers.AssertTrue(PostedWithoutErrors, 'Sales Order was not posted without error. %1', GetLastErrorText());
+
     end;
 
     [Test]
