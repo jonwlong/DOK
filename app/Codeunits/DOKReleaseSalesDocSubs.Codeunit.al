@@ -12,7 +12,9 @@ codeunit 50007 "DOK Release Sales Doc Subs"
         SalesLine.SetRange("Type", SalesLine."Type"::Item);
         if SalesLine.FindSet() then
             repeat
-                SalesLine.TestField("Package Tracking No.");
+                if SalesLine."DOK Original Order Qty." = 0 then
+                    SalesLine."DOK Original Order Qty." := SalesLine.Quantity;
+                SalesLine.Modify();
             until SalesLine.Next() = 0;
     end;
 

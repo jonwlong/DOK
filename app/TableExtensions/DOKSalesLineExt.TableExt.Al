@@ -12,13 +12,5 @@ tableextension 50100 "DOK Sales Line Ext" extends "Sales Line"
             Editable = false;
         }
 
-        modify(Quantity)
-        {
-            trigger OnAfterValidate();
-            begin
-                if "DOK Original Order Qty." = 0 then
-                    "DOK Original Order Qty." := Quantity;
-            end;
-        }
     }
 }

@@ -10,6 +10,13 @@ codeunit 50003 "DOK Test Fixtures Sales"
         SalesHeader.Insert(true);
     end;
 
+    procedure CreateSalesOrderWithSalesLines(NumberOfLines: Integer) SalesHeader: Record "Sales Header"
+    var
+    begin
+        SalesHeader := CreateSalesOrder();
+        AddXNumberOfSalesLinesToSalesOrder(SalesHeader, NumberOfLines);
+    end;
+
     local procedure CreateSalesLine(SalesHeader: Record "Sales Header") SalesLine: Record "Sales Line"
     var
         LineNo: Integer;
@@ -35,19 +42,12 @@ codeunit 50003 "DOK Test Fixtures Sales"
             SalesLine.Validate(Quantity, 1);
     end;
 
-    procedure CreateSalesLine(Quantity: Decimal): Record "Sales Line"
+    procedure CreateSalesLine(): Record "Sales Line"
     var
         SalesHeader: Record "Sales Header";
-        SalesLine: Record "Sales Line";
     begin
         SalesHeader := CreateSalesOrder();
-        SalesLine.Init();
-        SalesLine."Document Type" := SalesLine."Document Type"::Order;
-        SalesLine."Document No." := SalesHeader."No.";
-        SalesLine.Type := SalesLine.Type::Item;
-        SalesLine."No." := GetRandomItem()."No.";
-        SalesLine."Package Tracking No." := CopyStr(TestUtilities.GetRandomString(8), 1, MaxStrLen(SalesLine."Package Tracking No."));
-        SalesLine.Validate(Quantity, 1);
+        AddSalesLinesToSalesHeader(SalesHeader, 1);
     end;
 
     procedure GetRandomSalesHeaderOfTypeOrder() SalesHeader: Record "Sales Header"
