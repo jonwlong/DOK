@@ -2,7 +2,7 @@ codeunit 50001 "DOK Test Sales Orders"
 {
     Subtype = Test;
 
-    local procedure Initialze()
+    local procedure Initialize()
     var
         Resource: Record Resource;
         Setup: Record "DOK Setup";
@@ -19,7 +19,7 @@ codeunit 50001 "DOK Test Sales Orders"
             Setup.Insert();
         end else begin
             Setup."Freight No." := FreightCode;
-            Setup.Modify(true)
+            Setup.Modify()
         end;
         TestHelpersUtilities.CreateResource(Resource, FreightCode);
         WorkDate(Today);
@@ -33,7 +33,7 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesPost: Codeunit "Sales-Post";
         PostedWithoutErrors: Boolean;
     begin
-        Initialze();
+        Initialize();
 
         // [GIVEN] a Sales Order with 1 Sales Line
         SalesHeader := TestFixturesSales.CreateSalesOrder();
@@ -52,100 +52,15 @@ codeunit 50001 "DOK Test Sales Orders"
     end;
 
     [Test]
-    procedure Test_OriginalQuantityIsPopulatedOnNewLinesOnRelease()
-    var
-        SalesHeader: Record "Sales Header";
-        SalesLine: Record "Sales Line";
-        ReleaseSalesDoc: Codeunit "Release Sales Document";
-    begin
-
-        // [Setup]
-        Initialze();
-
-        // [GIVEN] A Sales Order with 5 lines
-        SalesHeader := TestFixturesSales.CreateSalesOrderWithSalesLines(5);
-
-        // [WHEN] When we release the order
-        ReleaseSalesDoc.Run(SalesHeader);
-
-        // [THEN] the Orginal Order Qty. is populated with the same value as the Quantity field
-        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
-        SalesLine.SetRange("Document No.", SalesHeader."No.");
-        SalesLine.SetRange("Type", SalesLine.Type::Item);
-        if SalesLine.FindSet() then
-            repeat
-                TestHelpers.AssertTrue(SalesLine."DOK Original Order Qty." = SalesLine.Quantity,
-                'Original Quantity %1 is not populated with the same value as the Quantity field %2', SalesLine."DOK Original Order Qty.", SalesLine.Quantity);
-            until SalesLine.Next() = 0;
-    end;
-
-    [Test]
-    procedure Test_OriginalQuantityNotChangedAfterQuantityModifiedThenReleased()
-    var
-        SalesHeader: Record "Sales Header";
-        SalesLine: Record "Sales Line";
-        ReleaseSalesDoc: Codeunit "Release Sales Document";
-    begin
-
-        // [Setup]
-        Initialze();
-
-        // [GIVEN] A Sales Order with 5 lines
-        SalesHeader := TestFixturesSales.CreateSalesOrderWithSalesLines(5);
-
-        // [WHEN] When we release the order reopend and modify the Quantity on each line
-        ReleaseSalesDoc.Run(SalesHeader);
-        ReleaseSalesDoc.PerformManualReopen(SalesHeader);
-        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
-        SalesLine.SetRange("Document No.", SalesHeader."No.");
-        SalesLine.SetRange("Type", SalesLine.Type::Item);
-        if SalesLine.FindSet() then
-            repeat
-                SalesLine.Validate(Quantity, SalesLine.Quantity + 1);
-                SalesLine.Modify(true);
-            until SalesLine.Next() = 0;
-        ReleaseSalesDoc.Run(SalesHeader);
-
-        // [THEN] Quantity is not equal to Original Quantity
-        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
-        SalesLine.SetRange("Document No.", SalesHeader."No.");
-        SalesLine.SetRange("Type", SalesLine.Type::Item);
-        if SalesLine.FindSet() then
-            repeat
-                TestHelpers.AssertTrue(SalesLine."DOK Original Order Qty." <> SalesLine.Quantity,
-                'Original Quantity %1 is equal to the Quantity field %2', SalesLine."DOK Original Order Qty.", SalesLine.Quantity);
-            until SalesLine.Next() = 0;
-    end;
-
-    [Test]
-    procedure Test_OriginalQuantityIsPassedToSalesInvoiceLinesOnPost()
-    var
-        SalesHeader: Record "Sales Header";
-        SalesInvoiceLine: Record "Sales Invoice Line";
-    begin
-        // [GIVEN] A Sales Order
-        SalesHeader := TestFixturesSales.CreateSalesOrder();
-
-        // [WHEN] When we add a new line and post the Sales Order
-        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
-        SalesHeader.PostShipMSTOrders();
-
-        // [THEN] The Orginal Order Qty. is populated with the same value as the Quantity field for each Sales Invoice Line
-        SalesInvoiceLine.SetRange("Document No.", SalesHeader."DOK MST Order No.");
-        SalesInvoiceLine.SetRange(Type, SalesInvoiceLine.Type::Item);
-        if SalesInvoiceLine.FindSet() then
-            repeat
-                TestHelpers.AreEqual(SalesInvoiceLine."DOK Original Order Qty.", SalesInvoiceLine.Quantity, 'Original Quantity is not populated with the same value as the Quantity field');
-            until SalesInvoiceLine.Next() = 0;
-    end;
-
-    [Test]
     procedure Test_CalculateFreightOnRelease1Line()
     var
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
         ReleaseSalesDoc: Codeunit "Release Sales Document";
     begin
+
+        Initialize();
+
         // [GIVEN] A Sales Order with 1 Sales Line
         SalesHeader := TestFixturesSales.CreateSalesOrder();
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
@@ -183,6 +98,95 @@ codeunit 50001 "DOK Test Sales Orders"
     end;
 
     [Test]
+    procedure Test_OriginalQuantityIsPopulatedOnNewLinesOnRelease()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        ReleaseSalesDoc: Codeunit "Release Sales Document";
+    begin
+
+        // [Setup]
+        Initialize();
+
+        // [GIVEN] A Sales Order with 5 lines
+        SalesHeader := TestFixturesSales.CreateSalesOrderWithSalesLines(5);
+
+        // [WHEN] When we release the order
+        ReleaseSalesDoc.Run(SalesHeader);
+
+        // [THEN] the Orginal Order Qty. is populated with the same value as the Quantity field
+        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetRange("Type", SalesLine.Type::Item);
+        if SalesLine.FindSet() then
+            repeat
+                TestHelpers.AssertTrue(SalesLine."DOK Original Order Qty." = SalesLine.Quantity,
+                'Original Quantity %1 is not populated with the same value as the Quantity field %2', SalesLine."DOK Original Order Qty.", SalesLine.Quantity);
+            until SalesLine.Next() = 0;
+    end;
+
+    [Test]
+    procedure Test_OriginalQuantityNotChangedAfterQuantityModifiedThenReleased()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesLine: Record "Sales Line";
+        ReleaseSalesDoc: Codeunit "Release Sales Document";
+    begin
+
+        // [Setup]
+        Initialize();
+
+        // [GIVEN] A Sales Order with 5 lines
+        SalesHeader := TestFixturesSales.CreateSalesOrderWithSalesLines(5);
+
+        // [WHEN] When we release the order reopend and modify the Quantity on each line
+        ReleaseSalesDoc.Run(SalesHeader);
+        ReleaseSalesDoc.PerformManualReopen(SalesHeader);
+        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetRange("Type", SalesLine.Type::Item);
+        if SalesLine.FindSet() then
+            repeat
+                SalesLine.Validate(Quantity, SalesLine.Quantity + 1);
+                SalesLine.Modify(true);
+            until SalesLine.Next() = 0;
+
+        ReleaseSalesDoc.Run(SalesHeader);
+
+        // [THEN] Quantity is not equal to Original Quantity
+        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetRange("Type", SalesLine.Type::Item);
+        if SalesLine.FindSet() then
+            repeat
+                TestHelpers.AssertTrue(SalesLine."DOK Original Order Qty." <> SalesLine.Quantity,
+                'Original Quantity %1 is equal to the Quantity field %2', SalesLine."DOK Original Order Qty.", SalesLine.Quantity);
+            until SalesLine.Next() = 0;
+    end;
+
+    [Test]
+    procedure Test_OriginalQuantityIsPassedToSalesInvoiceLinesOnPost()
+    var
+        SalesHeader: Record "Sales Header";
+        SalesInvoiceLine: Record "Sales Invoice Line";
+    begin
+        // [GIVEN] A Sales Order
+        SalesHeader := TestFixturesSales.CreateSalesOrder();
+
+        // [WHEN] When we add a new line and post the Sales Order
+        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
+        SalesHeader.PostShipMSTOrders();
+
+        // [THEN] The Orginal Order Qty. is populated with the same value as the Quantity field for each Sales Invoice Line
+        SalesInvoiceLine.SetRange("Document No.", SalesHeader."DOK MST Order No.");
+        SalesInvoiceLine.SetRange(Type, SalesInvoiceLine.Type::Item);
+        if SalesInvoiceLine.FindSet() then
+            repeat
+                TestHelpers.AreEqual(SalesInvoiceLine."DOK Original Order Qty.", SalesInvoiceLine.Quantity, 'Original Quantity is not populated with the same value as the Quantity field');
+            until SalesInvoiceLine.Next() = 0;
+    end;
+
+    [Test]
     procedure Test_CreateMSTEntriesFromSalesOrder()
     var
         SalesHeader: Record "Sales Header";
@@ -215,7 +219,7 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesHeader: Record "Sales Header";
         MSTManagement: Codeunit "DOK MST Management";
     begin
-        Initialze();
+        Initialize();
 
         // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
         MSTSalesHeader := TestFixturesMST.CreateMSTSalesOrderWithMSTEntries(1, 2);
@@ -239,7 +243,7 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesLine: Record "Sales Line";
     begin
 
-        Initialze();
+        Initialize();
 
         // [GIVEN] A Sales Order with 1 Sales Line with 2 MSTs each
         MSTSalesHeader := TestFixturesMST.CreateMSTSalesOrderReadyToPost(1, 2);
@@ -269,7 +273,7 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesShipLine: Record "Sales Shipment Line";
     begin
 
-        Initialze();
+        Initialize();
 
         // [GIVEN] A Sales Order with 2 Sales Line with 20 MSTs each
         MSTSalesHeader := TestFixturesMST.CreateMSTSalesOrderReadyToPost(2, 10);
@@ -297,7 +301,7 @@ codeunit 50001 "DOK Test Sales Orders"
         MSTMgt: Codeunit "DOK MST Management";
     begin
 
-        Initialze();
+        Initialize();
 
         // [GIVEN] A Sales Order with 2 Sales Line with 20 MSTs each
         MSTSalesHeader := TestFixturesMST.CreateMSTSalesOrderWithPostedShipments(1, 10);
@@ -329,7 +333,7 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesPost: Codeunit "Sales-Post";
     begin
 
-        Initialze();
+        Initialize();
 
         // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
         SalesHeader := TestFixturesMST.CreateSalesInvoiceWithMSTShipmentLines(SalesHeader, 1, 4);

@@ -17,7 +17,7 @@ codeunit 50010 "DOK Test Utilities"
         UnitOfMeasure: Record "Unit of Measure";
     begin
         Resource.Init();
-        Resource.Validate("No.", GetRandomString(10));
+        Resource.Validate("No.", ResourceNo);
         Resource.Insert(true);
 
         UnitOfMeasure.FindFirst();
