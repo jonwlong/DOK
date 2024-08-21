@@ -80,62 +80,41 @@ codeunit 50001 "DOK Test Sales Orders"
     end;
 
     [Test]
-    procedure Test_OriginalQuantityIsPopulatedOnNewLine()
-    var
-        SalesLine: Record "Sales Line";
-    begin
-
-        // [GIVEN] A a new Sales Line of type Order with Qty validated
-        SalesLine := TestFixturesSales.CreateSalesLine();
-
-        // [THEN] the Orginal Order Qty. is populated with the same value as the Quantity field 
-        TestHelpers.AreEqual(SalesLine."DOK Original Order Qty.", SalesLine.Quantity,
-        'Original Quantity is not populated with the same value as the Quantity field');
-
-    end;
-
-    [Test]
-    procedure Test_OriginalQuantityNotChangedAfterQuantityModified()
-    var
-        SalesLine: Record "Sales Line";
-        OriginalQuantity: Decimal;
-    begin
-
-        // [GIVEN] A a new Sales Line of type Order with Qty validated
-        SalesLine := TestFixturesSales.CreateSalesLine();
-
-        // [WHEN] When we modify the Quantity
-        OriginalQuantity := SalesLine.Quantity;
-        SalesLine.Validate(Quantity, SalesLine.Quantity + 1);
-
-        // [THEN] The original quantity is not changed
-        TestHelpers.AreEqual(SalesLine."DOK Original Order Qty.", OriginalQuantity, 'Original Quantity is not populated with the same value as the Quantity field');
-
-
-    end;
-
-
-    [Test]
-    procedure Test_OriginalQuantityIsNotModifiedAfterQuantityModified()
+    procedure Test_OriginalQuantityNotChangedAfterQuantityModifiedThenReleased()
     var
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
-        OriginalQuantity: Decimal;
+        ReleaseSalesDoc: Codeunit "Release Sales Document";
     begin
-        // [GIVEN] A Sales Order
-        SalesHeader := TestFixturesSales.CreateSalesOrder();
 
-        // [WHEN] When we add a new line
-        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
+        // [Setup]
+        Initialze();
 
-        // [WHEN] When we modify the Quantity
-        SalesLine.Get(SalesLine."Document Type"::Order, SalesHeader."No.", 10000);
-        OriginalQuantity := SalesLine.Quantity;
-        SalesLine.Validate(Quantity, 0);
-        SalesLine.Modify(true);
+        // [GIVEN] A Sales Order with 5 lines
+        SalesHeader := TestFixturesSales.CreateSalesOrderWithSalesLines(5);
 
-        // [THEN] Then Expected Output is the Orginal Order Qty. is populated with the same value as the Quantity field 
-        TestHelpers.AreEqual(SalesLine."DOK Original Order Qty.", OriginalQuantity, 'Original Quantity is not populated with the same value as the Quantity field');
+        // [WHEN] When we release the order reopend and modify the Quantity on each line
+        ReleaseSalesDoc.Run(SalesHeader);
+        ReleaseSalesDoc.PerformManualReopen(SalesHeader);
+        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetRange("Type", SalesLine.Type::Item);
+        if SalesLine.FindSet() then
+            repeat
+                SalesLine.Validate(Quantity, SalesLine.Quantity + 1);
+                SalesLine.Modify(true);
+            until SalesLine.Next() = 0;
+        ReleaseSalesDoc.Run(SalesHeader);
+
+        // [THEN] Quantity is not equal to Original Quantity
+        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetRange("Type", SalesLine.Type::Item);
+        if SalesLine.FindSet() then
+            repeat
+                TestHelpers.AssertTrue(SalesLine."DOK Original Order Qty." <> SalesLine.Quantity,
+                'Original Quantity %1 is equal to the Quantity field %2', SalesLine."DOK Original Order Qty.", SalesLine.Quantity);
+            until SalesLine.Next() = 0;
     end;
 
     [Test]

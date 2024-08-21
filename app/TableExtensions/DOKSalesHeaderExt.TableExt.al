@@ -48,6 +48,19 @@ tableextension 50001 "DOK Sales Header Ext" extends "Sales Header"
         exit(not MST.IsEmpty);
     end;
 
+    procedure HasFreightLine(): Boolean;
+    var
+        SalesLine: Record "Sales Line";
+        DOKSetup: Record "DOK Setup";
+    begin
+        SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
+        SalesLine.SetRange("Document No.", Rec."No.");
+        SalesLine.SetRange("Type", SalesLine."Type"::Resource);
+        SalesLine.SetRange("No.", DOKSetup."Freight No.");
+        exit(not SalesLine.IsEmpty);
+    end;
+
+
     procedure CreateOrdersFromMST();
     var
         MSTManagement: Codeunit "DOK MST Management";

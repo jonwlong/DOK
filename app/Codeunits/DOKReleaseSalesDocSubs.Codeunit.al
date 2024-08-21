@@ -5,7 +5,7 @@ codeunit 50007 "DOK Release Sales Doc Subs"
     var
         SalesLine: Record "Sales Line";
     begin
-        if SalesHeader."Document Type" = SalesHeader."Document Type"::Order then
+        if (SalesHeader."Document Type" = SalesHeader."Document Type"::Order) and (not SalesHeader.HasFreightLine()) then
             SalesHeader.AddFreightLine(SalesHeader.CalculateFreight());
         SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
         SalesLine.SetRange("Document No.", SalesHeader."No.");

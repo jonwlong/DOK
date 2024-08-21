@@ -29,7 +29,7 @@ codeunit 50006 "DOK Freight Management"
         SalesLine.Validate("Unit Price", FreightAmount);
         SalesLine.Validate("Unit Cost", 0);
         SalesLine."Tax Group Code" := 'VAT';
-        SalesLine.Insert(true);
+        if SalesLine.Insert(true) then;
     end;
 
     local procedure CallAPIFreightCalc(SalesHeader: Record "Sales Header"): Decimal
