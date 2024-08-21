@@ -105,9 +105,6 @@ codeunit 50001 "DOK Test Sales Orders"
         ReleaseSalesDoc: Codeunit "Release Sales Document";
     begin
 
-        // [Setup]
-        Initialize();
-
         // [GIVEN] A Sales Order with 5 lines
         SalesHeader := TestFixturesSales.CreateSalesOrderWithSalesLines(5);
 
@@ -132,9 +129,6 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesLine: Record "Sales Line";
         ReleaseSalesDoc: Codeunit "Release Sales Document";
     begin
-
-        // [Setup]
-        Initialize();
 
         // [GIVEN] A Sales Order with 5 lines
         SalesHeader := TestFixturesSales.CreateSalesOrderWithSalesLines(5);
@@ -171,8 +165,6 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesInvoiceLine: Record "Sales Invoice Line";
         SalesPost: Codeunit "Sales-Post";
     begin
-
-        Initialize();
 
         // [GIVEN] A Sales Order
         SalesHeader := TestFixturesSales.CreateSalesOrder();
