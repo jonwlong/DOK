@@ -1,14 +1,14 @@
-tableextension 50100 "Sales Line Ext" extends "Sales Line"
+tableextension 50000 "DOK Sales Invoice Line Ext" extends "Sales Invoice Line"
 {
     fields
     {
-        field(50000; "DOK Original Order Qty."; Integer)
+        field(50001; "DOK Original Order Qty."; Integer)
         {
-            DataClassification = ToBeClassified;
+            DataClassification = SystemMetadata;
             Editable = false;
         }
 
-        modify("Quantity")
+        modify(Quantity)
         {
             trigger OnAfterValidate();
             begin
