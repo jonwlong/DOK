@@ -2,29 +2,29 @@ codeunit 50001 "DOK Test Sales Orders"
 {
     Subtype = Test;
 
-    // local procedure Initialize()
-    // var
-    //     Resource: Record Resource;
-    //     Setup: Record "DOK Setup";
-    //     FreightCode: Code[20];
-    // begin
+    local procedure Initialize()
+    var
+        Resource: Record Resource;
+        Setup: Record "DOK Setup";
+        FreightCode: Code[20];
+    begin
 
-    //     if Initialized then
-    //         exit;
-    //     Initialized := true;
-    //     FreightCode := CopyStr(TestHelpersUtilities.GetRandomString(20), 1, MaxStrLen(FreightCode));
-    //     if not Setup.Get() then begin
-    //         Setup.Init();
-    //         Setup."Freight No." := FreightCode;
-    //         Setup.Insert();
-    //     end else begin
-    //         Setup."Freight No." := FreightCode;
-    //         Setup.Modify()
-    //     end;
-    //     TestHelpersUtilities.CreateResource(Resource, FreightCode);
-    //     // WorkDate(Today);
+        // if Initialized then
+        //     exit;
+        // Initialized := true;
+        // FreightCode := CopyStr(TestHelpersUtilities.GetRandomString(20), 1, MaxStrLen(FreightCode));
+        // if not Setup.Get() then begin
+        //     Setup.Init();
+        //     Setup."Freight No." := FreightCode;
+        //     Setup.Insert();
+        // end else begin
+        //     Setup."Freight No." := FreightCode;
+        //     Setup.Modify()
+        // end;
+        // TestHelpersUtilities.CreateResource(Resource, FreightCode);
+        // WorkDate(Today);
 
-    // end;
+    end;
 
     [Test]
     procedure Test_PostSalesOrder()
