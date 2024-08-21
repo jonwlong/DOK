@@ -186,7 +186,7 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesPost.Run(SalesHeader);
 
         // [THEN] The Orginal Order Qty. is populated with the same value as the Quantity field for each Sales Invoice Line
-        PostedSalesInvoice := TestFixturesSales.GetLastPostedSalesInvoice();
+        PostedSalesInvoice := TestHelpersUtilities.GetLastPostedSalesInvoice();
         SalesInvoiceLine.SetRange("Document No.", PostedSalesInvoice."No.");
         SalesInvoiceLine.SetRange(Type, SalesInvoiceLine.Type::Item);
         if SalesInvoiceLine.FindSet() then
