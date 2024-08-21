@@ -185,7 +185,7 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesPost.Run(SalesHeader);
 
         // [THEN] The Orginal Order Qty. is populated with the same value as the Quantity field for each Sales Invoice Line
-        SalesInvoiceLine.SetRange("Document No.", SalesHeader."DOK MST Order No.");
+        SalesInvoiceLine.SetRange("Document No.", SalesHeader."No.");
         SalesInvoiceLine.SetRange(Type, SalesInvoiceLine.Type::Item);
         if SalesInvoiceLine.FindSet() then
             repeat
