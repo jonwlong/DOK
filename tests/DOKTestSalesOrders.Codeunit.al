@@ -34,6 +34,8 @@ codeunit 50001 "DOK Test Sales Orders"
         PostedWithoutErrors: Boolean;
     begin
 
+        Initialize();
+
         // [GIVEN] a Sales Order with 1 Sales Line
         SalesHeader := TestFixturesSales.CreateSalesOrder();
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
@@ -58,6 +60,7 @@ codeunit 50001 "DOK Test Sales Orders"
         ReleaseSalesDoc: Codeunit "Release Sales Document";
     begin
 
+
         // [GIVEN] A Sales Order with 1 Sales Line
         SalesHeader := TestFixturesSales.CreateSalesOrder();
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
@@ -80,6 +83,7 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesLine: Record "Sales Line";
         ReleaseSalesDoc: Codeunit "Release Sales Document";
     begin
+
 
         // [GIVEN] A Sales Order with 10 Sales Lines
         SalesHeader := TestFixturesSales.CreateSalesOrder();
