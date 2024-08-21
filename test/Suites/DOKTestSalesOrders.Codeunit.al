@@ -197,7 +197,7 @@ codeunit 50001 "DOK Test Sales Orders"
     end;
 
     [Test]
-    procedure Test_CreateMSTEntriesFromSalesOrder()
+    procedure Test_CreateMSTEntriesForSalesOrder()
     var
         SalesHeader: Record "Sales Header";
         MST: Record "DOK Multiple Ship-to Entries";
