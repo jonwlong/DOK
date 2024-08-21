@@ -42,23 +42,6 @@ codeunit 50003 "DOK Test Fixtures Sales"
             SalesLine.Validate(Quantity, 1);
     end;
 
-    procedure CreateSalesLine(): Record "Sales Line"
-    var
-        SalesHeader: Record "Sales Header";
-    begin
-        SalesHeader := CreateSalesOrder();
-        AddSalesLinesToSalesHeader(SalesHeader, 1);
-    end;
-
-    procedure GetRandomSalesHeaderOfTypeOrder() SalesHeader: Record "Sales Header"
-    begin
-        SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::Order);
-        SalesHeader.FindSet();
-        SalesHeader.Next(Random(SalesHeader.Count));
-        SalesHeader."Shipment Date" := WorkDate();
-        exit(SalesHeader);
-    end;
-
     procedure AddSalesLinesToSalesHeader(SalesHeader: Record "Sales Header"; NumberOfLines: Integer)
     var
         SalesLine: Record "Sales Line";
