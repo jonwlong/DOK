@@ -2,6 +2,30 @@ codeunit 50001 "DOK Test Sales Orders"
 {
     Subtype = Test;
 
+    // local procedure Initialize()
+    // var
+    //     Resource: Record Resource;
+    //     Setup: Record "DOK Setup";
+    //     FreightCode: Code[20];
+    // begin
+
+    //     if Initialized then
+    //         exit;
+    //     Initialized := true;
+    //     FreightCode := CopyStr(TestHelpersUtilities.GetRandomString(20), 1, MaxStrLen(FreightCode));
+    //     if not Setup.Get() then begin
+    //         Setup.Init();
+    //         Setup."Freight No." := FreightCode;
+    //         Setup.Insert();
+    //     end else begin
+    //         Setup."Freight No." := FreightCode;
+    //         Setup.Modify()
+    //     end;
+    //     TestHelpersUtilities.CreateResource(Resource, FreightCode);
+    //     // WorkDate(Today);
+
+    // end;
+
     [Test]
     procedure Test_PostSalesOrder()
     var
@@ -21,7 +45,7 @@ codeunit 50001 "DOK Test Sales Orders"
         Commit();
         PostedWithoutErrors := SalesPost.Run(SalesHeader);
 
-        // [THEN] the Sales Order is posted without error
+        //Error(GetLastErrorText());
         TestHelpers.AssertTrue(PostedWithoutErrors, 'Sales Order was not posted without error. %1', GetLastErrorText());
 
     end;
@@ -33,6 +57,7 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesLine: Record "Sales Line";
         ReleaseSalesDoc: Codeunit "Release Sales Document";
     begin
+
         // [GIVEN] A Sales Order with 1 Sales Line
         SalesHeader := TestFixturesSales.CreateSalesOrder();
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
@@ -55,6 +80,7 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesLine: Record "Sales Line";
         ReleaseSalesDoc: Codeunit "Release Sales Document";
     begin
+
         // [GIVEN] A Sales Order with 10 Sales Lines
         SalesHeader := TestFixturesSales.CreateSalesOrder();
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 10);
@@ -73,5 +99,6 @@ codeunit 50001 "DOK Test Sales Orders"
     var
         TestHelpers: Codeunit "DOK Test Helpers";
         TestFixturesSales: Codeunit "DOK Test Fixtures Sales";
+        TestHelpersUtilities: Codeunit "DOK Test Utilities";
         Initialized: Boolean;
 }
