@@ -14,7 +14,7 @@ codeunit 50003 "DOK Test Fixtures Sales"
     var
     begin
         SalesHeader := CreateSalesOrder();
-        AddXNumberOfSalesLinesToSalesOrder(SalesHeader, NumberOfLines);
+        AddSalesLinesToSalesHeader(SalesHeader, NumberOfLines);
     end;
 
     local procedure CreateSalesLine(SalesHeader: Record "Sales Header") SalesLine: Record "Sales Line"
@@ -43,17 +43,6 @@ codeunit 50003 "DOK Test Fixtures Sales"
     end;
 
     procedure AddSalesLinesToSalesHeader(SalesHeader: Record "Sales Header"; NumberOfLines: Integer)
-    var
-        SalesLine: Record "Sales Line";
-        i: Integer;
-    begin
-        for i := 1 to NumberOfLines do begin
-            SalesLine := CreateSalesLine(SalesHeader);
-            SalesLine.Insert(true);
-        end;
-    end;
-
-    procedure AddXNumberOfSalesLinesToSalesOrder(SalesHeader: Record "Sales Header"; NumberOfLines: Integer)
     var
         SalesLine: Record "Sales Line";
         i: Integer;
