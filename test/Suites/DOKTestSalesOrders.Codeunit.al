@@ -168,6 +168,7 @@ codeunit 50001 "DOK Test Sales Orders"
     procedure Test_OriginalQuantityIsPassedToSalesInvoiceLinesOnPost()
     var
         SalesHeader: Record "Sales Header";
+        PostedSalesInvoice: Record "Sales Invoice Header";
         SalesInvoiceLine: Record "Sales Invoice Line";
         SalesPost: Codeunit "Sales-Post";
     begin
@@ -185,10 +186,12 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesPost.Run(SalesHeader);
 
         // [THEN] The Orginal Order Qty. is populated with the same value as the Quantity field for each Sales Invoice Line
-        SalesInvoiceLine.SetRange("Document No.", SalesHeader."DOK MST Order No.");
+        PostedSalesInvoice := TestFixturesSales.GetLastPostedSalesInvoice();
+        SalesInvoiceLine.SetRange("Document No.", PostedSalesInvoice."No.");
         SalesInvoiceLine.SetRange(Type, SalesInvoiceLine.Type::Item);
         if SalesInvoiceLine.FindSet() then
             repeat
+                TestHelpers.AssertTrue(SalesInvoiceLine."DOK Original Order Qty." > 0, 'Original Quantity is not greater than 0');
                 TestHelpers.AreEqual(SalesInvoiceLine."DOK Original Order Qty.", SalesInvoiceLine.Quantity, 'Original Quantity is not populated with the same value as the Quantity field');
             until SalesInvoiceLine.Next() = 0;
     end;
