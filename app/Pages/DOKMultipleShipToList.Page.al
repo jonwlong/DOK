@@ -5,9 +5,9 @@ page 50000 "DOK Multiple Ship-to List"
     ApplicationArea = All;
     UsageCategory = Lists;
     Caption = 'DOK Multiple Ship to Orders';
-    Layout
+    layout
     {
-        area(content)
+        area(Content)
         {
             repeater(Entries)
             {

@@ -43,7 +43,6 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesHeader.Modify(true);
 
         // [WHEN] we post the Sales Order
-        //PostedWithoutErrors := SalesPost.Run(SalesHeader);
         Commit();
         PostedWithoutErrors := SalesPost.Run(SalesHeader);
 
@@ -80,7 +79,7 @@ codeunit 50001 "DOK Test Sales Orders"
             until SalesLine.Next() = 0;
     end;
 
-    [TEST]
+    [Test]
     procedure Test_OriginalQuantityIsPopulatedOnNewLine()
     var
         SalesLine: Record "Sales Line";
@@ -95,7 +94,7 @@ codeunit 50001 "DOK Test Sales Orders"
 
     end;
 
-    [TEST]
+    [Test]
     procedure Test_OriginalQuantityNotChangedAfterQuantityModified()
     var
         SalesLine: Record "Sales Line";
@@ -392,7 +391,6 @@ codeunit 50001 "DOK Test Sales Orders"
 
 
     // end;
-
 
     //All of your selections were processed
     [MessageHandler]

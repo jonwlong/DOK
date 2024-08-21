@@ -55,7 +55,7 @@ codeunit 50003 "DOK Test Fixtures Sales"
         SalesHeader.SetRange("Document Type", SalesHeader."Document Type"::Order);
         SalesHeader.FindSet();
         SalesHeader.Next(Random(SalesHeader.Count));
-        SalesHeader."Shipment Date" := WORKDATE();
+        SalesHeader."Shipment Date" := WorkDate();
         exit(SalesHeader);
     end;
 
