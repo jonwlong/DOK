@@ -218,7 +218,7 @@ codeunit 50001 "DOK Test Sales Orders"
         Initialze();
 
         // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
-        MSTSalesHeader := TestFixturesSales.CreateMSTSalesOrderWithMSTEntries(1, 2);
+        MSTSalesHeader := TestFixturesMST.CreateMSTSalesOrderWithMSTEntries(1, 2);
 
         // [WHEN] we run the custom MST order creation procedure
         MSTSalesHeader.CreateOrdersFromMST();
@@ -242,7 +242,7 @@ codeunit 50001 "DOK Test Sales Orders"
         Initialze();
 
         // [GIVEN] A Sales Order with 1 Sales Line with 2 MSTs each
-        MSTSalesHeader := TestFixturesSales.CreateMSTSalesOrderReadyToPost(1, 2);
+        MSTSalesHeader := TestFixturesMST.CreateMSTSalesOrderReadyToPost(1, 2);
 
         // [WHEN] we post the Sales Orders
         MSTSalesHeader.PostShipMSTOrders();
@@ -272,7 +272,7 @@ codeunit 50001 "DOK Test Sales Orders"
         Initialze();
 
         // [GIVEN] A Sales Order with 2 Sales Line with 20 MSTs each
-        MSTSalesHeader := TestFixturesSales.CreateMSTSalesOrderReadyToPost(2, 10);
+        MSTSalesHeader := TestFixturesMST.CreateMSTSalesOrderReadyToPost(2, 10);
 
         // [WHEN] we post the Sales Orders
         MSTSalesHeader.PostShipMSTOrders();
@@ -300,7 +300,7 @@ codeunit 50001 "DOK Test Sales Orders"
         Initialze();
 
         // [GIVEN] A Sales Order with 2 Sales Line with 20 MSTs each
-        MSTSalesHeader := TestFixturesSales.CreateMSTSalesOrderWithPostedShipments(1, 10);
+        MSTSalesHeader := TestFixturesMST.CreateMSTSalesOrderWithPostedShipments(1, 10);
 
         // [WHEN] we create an invoice from the MST Order
         MSTMgt.CreateInvoiceWithCombinedMSTShipments(MSTSalesHeader."No.");
@@ -332,7 +332,7 @@ codeunit 50001 "DOK Test Sales Orders"
         Initialze();
 
         // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
-        SalesHeader := TestFixturesSales.CreateSalesInvoiceWithMSTShipmentLines(SalesHeader, 1, 4);
+        SalesHeader := TestFixturesMST.CreateSalesInvoiceWithMSTShipmentLines(SalesHeader, 1, 4);
 
         // [WHEN] we post the Sales Order of type Invoice
         SalesPost.Run(SalesHeader);
@@ -382,6 +382,7 @@ codeunit 50001 "DOK Test Sales Orders"
     var
         TestHelpers: Codeunit "DOK Test Helpers";
         TestFixturesSales: Codeunit "DOK Test Fixtures Sales";
+        TestFixturesMST: Codeunit "DOK Test Fixtures MST";
         TestHelpersUtilities: Codeunit "DOK Test Utilities";
         Initialized: Boolean;
 }

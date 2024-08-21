@@ -70,53 +70,6 @@ codeunit 50003 "DOK Test Fixtures Sales"
         end;
     end;
 
-    procedure CreateSalesInvoiceWithMSTShipmentLines(SalesHeader: Record "Sales Header"; NumberOfSalesLines: Integer; NumberOfMSTOrders: Integer) SalesInvoiceHeader: Record "Sales Header"
-    var
-        MSTManagement: Codeunit "DOK MST Management";
-        MSTOrderNo: Code[20];
-    begin
-        SalesHeader := CreateSalesOrder();
-        AddSalesLinesToSalesHeader(SalesHeader, NumberOfSalesLines);
-        MSTManagement.CreateMockMSTOrders(SalesHeader."No.", NumberOfMSTOrders);
-        MSTOrderNo := SalesHeader."No.";
-        MSTManagement.CreateOrdersFromMSTEntries(SalesHeader);
-        MSTManagement.PostShipOrdersCreatedFromMST(SalesHeader);
-        MSTManagement.CreateInvoiceWithCombinedMSTShipments(MSTOrderNo);
-        SalesInvoiceHeader.SetRange("DOK MST Order No.", MSTOrderNo);
-        SalesInvoiceHeader.SetRange("Document Type", SalesInvoiceHeader."Document Type"::Invoice);
-        SalesInvoiceHeader.FindFirst();
-    end;
-
-    procedure CreateMSTSalesOrderWithMSTEntries(NumberOfSalesLines: Integer; NumberOfMSTOrders: Integer) SalesHeader: Record "Sales Header"
-    var
-        MSTManagement: Codeunit "DOK MST Management";
-    begin
-        SalesHeader := CreateSalesOrder();
-        AddSalesLinesToSalesHeader(SalesHeader, NumberOfSalesLines);
-        MSTManagement.CreateMockMSTOrders(SalesHeader."No.", NumberOfMSTOrders);
-    end;
-
-    procedure CreateMSTSalesOrderReadyToPost(NumberOfSalesLines: Integer; NumberOfMSTOrders: Integer) SalesHeader: Record "Sales Header"
-    var
-        MSTManagement: Codeunit "DOK MST Management";
-    begin
-        SalesHeader := CreateSalesOrder();
-        AddSalesLinesToSalesHeader(SalesHeader, NumberOfSalesLines);
-        MSTManagement.CreateMockMSTOrders(SalesHeader."No.", NumberOfMSTOrders);
-        MSTManagement.CreateOrdersFromMSTEntries(SalesHeader);
-    end;
-
-    procedure CreateMSTSalesOrderWithPostedShipments(NumberOfSalesLines: Integer; NumberOfMSTOrders: Integer) SalesHeader: Record "Sales Header"
-    var
-        MSTManagement: Codeunit "DOK MST Management";
-    begin
-        SalesHeader := CreateSalesOrder();
-        AddSalesLinesToSalesHeader(SalesHeader, NumberOfSalesLines);
-        MSTManagement.CreateMockMSTOrders(SalesHeader."No.", NumberOfMSTOrders);
-        MSTManagement.CreateOrdersFromMSTEntries(SalesHeader);
-        MSTManagement.PostShipOrdersCreatedFromMST(SalesHeader);
-    end;
-
     procedure AddXNumberOfSalesLinesToSalesOrder(SalesHeader: Record "Sales Header"; NumberOfLines: Integer)
     var
         SalesLine: Record "Sales Line";
