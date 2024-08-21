@@ -169,13 +169,20 @@ codeunit 50001 "DOK Test Sales Orders"
     var
         SalesHeader: Record "Sales Header";
         SalesInvoiceLine: Record "Sales Invoice Line";
+        SalesPost: Codeunit "Sales-Post";
     begin
+
+        Initialize();
+
         // [GIVEN] A Sales Order
         SalesHeader := TestFixturesSales.CreateSalesOrder();
+        SalesHeader.Validate(Ship, true);
+        SalesHeader.Validate(Invoice, true);
+        SalesHeader.Modify(true);
 
         // [WHEN] When we add a new line and post the Sales Order
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
-        SalesHeader.PostShipMSTOrders();
+        SalesPost.Run(SalesHeader);
 
         // [THEN] The Orginal Order Qty. is populated with the same value as the Quantity field for each Sales Invoice Line
         SalesInvoiceLine.SetRange("Document No.", SalesHeader."DOK MST Order No.");
