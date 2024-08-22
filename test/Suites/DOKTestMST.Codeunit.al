@@ -163,66 +163,6 @@ codeunit 50011 "DOK Test MST"
 
     end;
 
-    [Test]
-    procedure Test_EndToEndPostMSTInvoice()
-    var
-        SalesHeader: Record "Sales Header";
-        PostedSalesInvoice: Record "Sales Invoice Header";
-        PostedSalesInvoiceLine: Record "Sales Invoice Line";
-        SalesPost: Codeunit "Sales-Post";
-    begin
-
-        Initialize();
-
-        // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
-        SalesHeader := TestFixturesMST.CreateSalesInvoiceWithMSTShipmentLines(SalesHeader, 1, 4);
-
-        // [WHEN] we post the Sales Order of type Invoice
-        SalesPost.Run(SalesHeader);
-
-        // [THEN] The Sales Invoice is posted with MSTOrderNo
-        PostedSalesInvoice.SetRange("DOK MST Order No.", SalesHeader."DOK MST Order No.");
-        TestHelpers.AssertTrue(not PostedSalesInvoice.IsEmpty, 'Sales Invoice was not posted with MST Order No. %1', SalesHeader."DOK MST Order No.");
-
-        // [THEN] the invoice contains 12 lines
-        PostedSalesInvoice.FindFirst();
-        PostedSalesInvoiceLine.SetRange("Document No.", PostedSalesInvoice."No.");
-        TestHelpers.AssertTrue(PostedSalesInvoiceLine.Count = 12, 'Expected 12 Sales Invoice Lines to be created. %1 were created', PostedSalesInvoiceLine.Count);
-    end;
-
-    [TEST]
-    procedure Test_PageActionCreateInvoice()
-    var
-        SalesHeader: Record "Sales Header";
-        SalesOrderPage: TestPage "Sales Order";
-    begin
-
-        Initialize();
-
-        // [GIVEN] A SalesOrderPage with an active Sales Order 1 line 2 MSTs
-        SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
-
-        // [WHEN] We run the action "Post & Ship MST Invoice"
-        SalesOrderPage.OpenNew();
-        SalesOrderPage.GoToRecord(SalesHeader);
-        SalesOrderPage."Post & Ship MST Invoice".Invoke();
-
-        // [THEN] The Sales Invoice is created with MSTOrderNo
-        SalesHeader.SetRange("DOK MST Order No.", SalesHeader."No.");
-        TestHelpers.AssertTrue(not SalesHeader.IsEmpty, 'Sales Invoice was not posted with MST Order No. %1', SalesHeader."DOK MST Order No.");
-
-
-    end;
-
-    //All of your selections were processed
-    [MessageHandler]
-    procedure PostBatchSalesPostingMessageHandler(Message: Text[1024]);
-    begin
-        if Message in ['All of your selections were processed'] then
-            exit;
-    end;
-
     var
         TestHelpers: Codeunit "DOK Test Helpers";
         TestFixturesSales: Codeunit "DOK Test Fixtures Sales";
