@@ -34,8 +34,4 @@ codeunit 50010 "DOK Test Utilities"
         LastPostedSalesInvoice.Get(NoSeriesLine."Last No. Used");
     end;
 
-    procedure GetRandomString(Length: Integer): Text
-    begin
-        exit(CopyStr(DelChr(Format(CreateGuid()), '=', '{}-'), 1, Length));
-    end;
 }

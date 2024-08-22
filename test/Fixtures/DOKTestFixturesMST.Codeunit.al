@@ -8,7 +8,7 @@ codeunit 50004 "DOK Test Fixtures MST"
     begin
         SalesHeader := TestFixturesSales.CreateSalesOrder();
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, NumberOfSalesLines);
-        MSTManagement.CreateMockMSTOrders(SalesHeader."No.", NumberOfMSTOrders);
+        MSTManagement.CreateMockMSTEntries(SalesHeader."No.", NumberOfMSTOrders);
         MSTOrderNo := SalesHeader."No.";
         MSTManagement.CreateOrdersFromMSTEntries(SalesHeader);
         MSTManagement.PostShipOrdersCreatedFromMST(SalesHeader);
@@ -24,7 +24,7 @@ codeunit 50004 "DOK Test Fixtures MST"
     begin
         SalesHeader := TestFixturesSales.CreateSalesOrder();
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, NumberOfSalesLines);
-        MSTManagement.CreateMockMSTOrders(SalesHeader."No.", NumberOfMSTOrders);
+        MSTManagement.CreateMockMSTEntries(SalesHeader."No.", NumberOfMSTOrders);
     end;
 
     procedure CreateMSTSalesOrderReadyToPost(NumberOfSalesLines: Integer; NumberOfMSTOrders: Integer) SalesHeader: Record "Sales Header"
@@ -33,7 +33,7 @@ codeunit 50004 "DOK Test Fixtures MST"
     begin
         SalesHeader := TestFixturesSales.CreateSalesOrder();
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, NumberOfSalesLines);
-        MSTManagement.CreateMockMSTOrders(SalesHeader."No.", NumberOfMSTOrders);
+        MSTManagement.CreateMockMSTEntries(SalesHeader."No.", NumberOfMSTOrders);
         MSTManagement.CreateOrdersFromMSTEntries(SalesHeader);
     end;
 
@@ -43,7 +43,7 @@ codeunit 50004 "DOK Test Fixtures MST"
     begin
         SalesHeader := TestFixturesSales.CreateSalesOrder();
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, NumberOfSalesLines);
-        MSTManagement.CreateMockMSTOrders(SalesHeader."No.", NumberOfMSTOrders);
+        MSTManagement.CreateMockMSTEntries(SalesHeader."No.", NumberOfMSTOrders);
         MSTManagement.CreateOrdersFromMSTEntries(SalesHeader);
         MSTManagement.PostShipOrdersCreatedFromMST(SalesHeader);
     end;

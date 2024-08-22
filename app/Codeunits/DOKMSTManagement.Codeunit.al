@@ -1,10 +1,10 @@
 codeunit 50009 "DOK MST Management"
 {
-    procedure CreateMockMSTOrders(SalesHeaderNo: Code[20]; NumberOfMSTEntries: Integer);
+    procedure CreateMockMSTEntries(SalesHeaderNo: Code[20]; NumberOfMSTEntries: Integer);
     var
         MSTEntries: Record "DOK Multiple Ship-to Entries";
         SalesLine: Record "Sales Line";
-        Util: Codeunit "DOK Test Utilities";
+        Util: Codeunit "DOK Utilities";
         NumberOfIterations: Integer;
     begin
         // populate MSTEntries with random address data
@@ -19,10 +19,10 @@ codeunit 50009 "DOK MST Management"
                 MSTEntries.Init();
                 MSTEntries."Order No." := SalesHeaderNo;
                 MSTEntries."Line No." := SalesLine."Line No.";
-                MSTEntries."Ship-to Name" := CopyStr(Util.GetRandomString(8), 1, MaxStrLen(MSTEntries."Ship-to Name"));
-                MSTEntries."Ship-to Address" := CopyStr(Util.GetRandomString(8), 1, MaxStrLen(MSTEntries."Ship-to Address"));
-                MSTEntries."Ship-to City" := CopyStr(Util.GetRandomString(8), 1, MaxStrLen(MSTEntries."Ship-to City"));
-                MSTEntries."Ship-to State" := CopyStr(Util.GetRandomString(8), 1, MaxStrLen(MSTEntries."Ship-to State"));
+                MSTEntries."Ship-to Name" := Util.GetRandomText30();
+                MSTEntries."Ship-to Address" := Util.GetRandomText30();
+                MSTEntries."Ship-to City" := Util.GetRandomText30();
+                MSTEntries."Ship-to State" := Util.GetRandomCode10();
                 MSTEntries."Ship-to Post Code" := '84454';
                 MSTEntries."Ship-to Country" := 'US';
                 MSTEntries."Ship-to Phone No." := '333.333.3333';

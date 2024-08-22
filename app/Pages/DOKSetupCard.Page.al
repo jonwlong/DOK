@@ -5,6 +5,7 @@ page 50001 "DOK Setup Card"
     Caption = 'DOK Setup';
     PageType = Card;
     SourceTable = "DOK Setup";
+    Editable = true;
 
     layout
     {

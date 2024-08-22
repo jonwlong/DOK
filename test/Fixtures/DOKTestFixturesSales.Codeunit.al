@@ -19,6 +19,7 @@ codeunit 50003 "DOK Test Fixtures Sales"
 
     local procedure CreateSalesLine(SalesHeader: Record "Sales Header") SalesLine: Record "Sales Line"
     var
+        Utilities: Codeunit "DOK Utilities";
         LineNo: Integer;
     begin
         SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
@@ -36,7 +37,7 @@ codeunit 50003 "DOK Test Fixtures Sales"
         SalesLine.Validate(Type, SalesLine.Type::Item);
         SalesLine.Validate("No.", GetRandomItem()."No.");
         SalesLine.Validate(Quantity, Random(100));
-        SalesLine."Package Tracking No." := CopyStr(TestUtilities.GetRandomString(8), 1, MaxStrLen(SalesLine."Package Tracking No."));
+        SalesLine."Package Tracking No." := Utilities.GetRandomText30();
         SalesLine."Line No." := LineNo;
         if SalesLine.Quantity = 0 then
             SalesLine.Validate(Quantity, 1);
@@ -75,8 +76,5 @@ codeunit 50003 "DOK Test Fixtures Sales"
         Item.Next(RandomInt);
         exit(Item);
     end;
-
-    var
-        TestUtilities: Codeunit "DOK Test Utilities";
 
 }

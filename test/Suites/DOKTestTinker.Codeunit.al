@@ -104,8 +104,6 @@ codeunit 50000 "DOK Test Tinker"
         // [THEN] Then Expected Output 
     end;
 
-
-
     var
         TestHelpers: Codeunit "DOK Test Helpers";
 

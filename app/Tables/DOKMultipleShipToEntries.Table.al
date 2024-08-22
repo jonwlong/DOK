@@ -56,18 +56,6 @@ table 50000 "DOK Multiple Ship-to Entries"
         field(12; Quantity; Decimal)
         {
             DataClassification = AccountData;
-            trigger OnValidate()
-            var
-                SalesLine: Record "Sales Line";
-                MST: Record "DOK Multiple Ship-to Entries";
-            begin
-                MST.SetRange("Order No.", Rec."Order No.");
-                MST.SetRange("Line No.", Rec."Line No.");
-                MST.CalcSums(Quantity);
-                SalesLine.Get(SalesLine."Document Type"::Order, Rec."Order No.", Rec."Line No.");
-                SalesLine.Validate(Quantity, MST.Quantity + Rec.Quantity);
-                SalesLine.Modify(true);
-            end;
         }
 
     }
