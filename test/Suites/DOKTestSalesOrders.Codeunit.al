@@ -207,7 +207,6 @@ codeunit 50001 "DOK Test Sales Orders"
     var
         TestHelpers: Codeunit "DOK Test Helpers";
         TestFixturesSales: Codeunit "DOK Test Fixtures Sales";
-        TestFixturesMST: Codeunit "DOK Test Fixtures MST";
         TestHelpersUtilities: Codeunit "DOK Test Utilities";
         Utilities: Codeunit "DOK Utilities";
         Initialized: Boolean;
