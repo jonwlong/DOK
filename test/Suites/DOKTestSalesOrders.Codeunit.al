@@ -211,6 +211,9 @@ codeunit 50001 "DOK Test Sales Orders"
         // [WHEN] we create MST Entries
         MSTMgt.CreateMockMSTOrders(SalesHeader."No.", 2);
 
+        // [THEN] There should be 2 MSTs
+        TestHelpers.AssertTrue(MST.Count = 2, 'Expected 2 MSTs to be created, but found %1', MST.Count);
+
         // [THEN] The quantity on the Sales Order line should reflect the total quantity of the MSTs
         SalesLine.Get(SalesLine."Document Type"::Order, SalesHeader."No.", 10000);
         MST.SetRange("Order No.", SalesHeader."No.");
@@ -218,8 +221,6 @@ codeunit 50001 "DOK Test Sales Orders"
         MST.CalcSums(Quantity);
         TestHelpers.AssertTrue(SalesLine.Quantity = MST.Quantity, 'Total Quantity is not %1, It''s %2', SalesLine.Quantity, MST.Quantity);
 
-        // [THEN] There should be 2 MSTs
-        TestHelpers.AssertTrue(MST.Count = 2, 'Expected 2 MSTs to be created, but found %1', MST.Count);
     end;
 
     [Test]
