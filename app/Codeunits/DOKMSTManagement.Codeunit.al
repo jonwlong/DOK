@@ -70,38 +70,20 @@ codeunit 50009 "DOK MST Management"
     end;
 
 
-    procedure PostShipOrdersCreatedFromMST(MSTSalesHeader: Record "Sales Header")
-    var
-        SalesHeader: Record "Sales Header";
-        SalesPost: Codeunit "Sales-Post";
-    begin
-        SalesHeader.SetRange("DOK MST Order No.", MSTSalesHeader."No.");
-        if SalesHeader.FindSet() then
-            repeat
-                SalesHeader.Ship := true;
-                SalesHeader.Invoice := false;
-                SalesHeader.Modify(true);
-                SalesPost.Run(SalesHeader);
-            until SalesHeader.Next() = 0;
-    end;
-
-    procedure CreateInvoiceWithCombinedMSTShipments(MSTOrderNo: Text[20])
-    var
-        SalesHeader: Record "Sales Header";
-        SalesShipLine: Record "Sales Shipment Line";
-        SalesGetShipment: Codeunit "Sales-Get Shipment";
-    begin
-        SalesShipLine.SetRange("DOK MST Order No.", MSTOrderNo);
-        if not SalesShipLine.FindSet() then
-            Error('No Shipments found for MST Order No. %1', MSTOrderNo);
-        SalesHeader.Init();
-        SalesHeader.Validate("Document Type", SalesHeader."Document Type"::Invoice);
-        SalesHeader.Validate("Sell-to Customer No.", SalesShipLine."Sell-to Customer No.");
-        SalesHeader.Validate("DOK MST Order No.", MSTOrderNo);
-        SalesHeader.Insert(true);
-        SalesGetShipment.SetSalesHeader(SalesHeader);
-        SalesGetShipment.CreateInvLines(SalesShipLine);
-    end;
+    // procedure PostShipOrdersCreatedFromMST(MSTSalesHeader: Record "Sales Header")
+    // var
+    //     SalesHeader: Record "Sales Header";
+    //     SalesPost: Codeunit "Sales-Post";
+    // begin
+    //     SalesHeader.SetRange("DOK MST Order No.", MSTSalesHeader."No.");
+    //     if SalesHeader.FindSet() then
+    //         repeat
+    //             SalesHeader.Ship := true;
+    //             SalesHeader.Invoice := false;
+    //             SalesHeader.Modify(true);
+    //             SalesPost.Run(SalesHeader);
+    //         until SalesHeader.Next() = 0;
+    // end;
 
     procedure MSTEntriesAndCreatedSalesOrdersReconcile(MSTSalesHeaderNo: Text[20]): Boolean
     var

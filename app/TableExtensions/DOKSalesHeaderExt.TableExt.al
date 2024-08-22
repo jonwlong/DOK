@@ -73,12 +73,12 @@ tableextension 50001 "DOK Sales Header Ext" extends "Sales Header"
         MSTManagement.CreateOrdersFromMSTEntries(Rec);
     end;
 
-    procedure PostShipMSTOrders();
-    var
-        MSTManagement: Codeunit "DOK MST Management";
-    begin
-        MSTManagement.PostShipOrdersCreatedFromMST(Rec);
-    end;
+    // procedure PostShipMSTOrders();
+    // var
+    //     MSTManagement: Codeunit "DOK MST Management";
+    // begin
+    //     MSTManagement.PostShipOrdersCreatedFromMST(Rec);
+    // end;
 
 
 }
