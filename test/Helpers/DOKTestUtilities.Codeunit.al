@@ -34,4 +34,28 @@ codeunit 50010 "DOK Test Utilities"
         LastPostedSalesInvoice.Get(NoSeriesLine."Last No. Used");
     end;
 
+    procedure CreateNoSeries(NoSeriesCode: Code[20])
+    var
+        NoSeries: Record "No. Series";
+        NoSeriesLine: Record "No. Series Line";
+    begin
+        NoSeries.Init();
+        NoSeries.Code := NoSeriesCode;
+        NoSeries."Default Nos." := true;
+        NoSeries.Insert(true);
+    end;
+
+    procedure CreateNoSeriesLine(NoSeriesCode: Code[20]; StartingNo: Code[20]; EndingNo: Code[20]) NoSeriesLine: Record "No. Series Line"
+    var
+    begin
+        NoSeriesLine.Init();
+        NoSeriesLine."Series Code" := NoSeriesCode;
+        NoSeriesLine."Starting No." := StartingNo;
+        NoSeriesLine."Ending No." := EndingNo;
+        NoSeriesLine."Starting Date" := Today;
+        NoSeriesLine."Increment-by No." := 1;
+        NoSeriesLine.Insert(true);
+        exit(NoSeriesLine);
+    end;
+
 }

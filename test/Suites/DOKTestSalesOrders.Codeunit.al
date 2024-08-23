@@ -26,6 +26,13 @@ codeunit 50001 "DOK Test Sales Orders"
 
     end;
 
+    procedure CreateNoSeriesForMST()
+    var
+    begin
+        TestHelpersUtilities.CreateNoSeries('MST');
+        TestHelpersUtilities.CreateNoSeriesLine('MST', '10000', '999999');
+    end;
+
     [Test]
     procedure Test_PostSalesOrder()
     var

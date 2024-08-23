@@ -4,11 +4,10 @@ table 50000 "DOK Multiple Ship-to Entries"
     DataClassification = AccountData;
     fields
     {
-        field(1; "Entry No."; BigInteger)
+        field(1; "Entry No."; Code[20])
         {
             DataClassification = AccountData;
             Editable = false;
-            AutoIncrement = true;
         }
         field(2; "Order No."; Code[20])
         {
@@ -71,4 +70,12 @@ table 50000 "DOK Multiple Ship-to Entries"
             Clustered = false;
         }
     }
+
+    trigger OnInsert()
+    var
+        NoSeries: Codeunit "No. series";
+    begin
+        Rec."Entry No." := NoSeries.GetNextNo('MST', WorkDate());
+    end;
+
 }

@@ -23,7 +23,15 @@ codeunit 50011 "DOK Test MST"
         end;
         TestHelpersUtilities.CreateResource(Resource, FreightCode);
         WorkDate(Today);
+        CreateNoSeriesForMST();
 
+    end;
+
+    procedure CreateNoSeriesForMST()
+    var
+    begin
+        TestHelpersUtilities.CreateNoSeries('MST');
+        TestHelpersUtilities.CreateNoSeriesLine('MST', '10000', '999999');
     end;
 
     [Test]
@@ -34,6 +42,9 @@ codeunit 50011 "DOK Test MST"
         SalesLine: Record "Sales Line";
         MSTMgt: Codeunit "DOK MST Management";
     begin
+
+        Initialize();
+
         // [GIVEN] A Sales Order with 1 Sales Line and 2 MSTs
         SalesHeader := TestFixturesSales.CreateSalesOrder();
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
