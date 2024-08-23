@@ -6,8 +6,8 @@ codeunit 50007 "DOK Release Sales Doc Subs"
         FreightManagement: Codeunit "DOK Freight Management";
         FreightAmount: Decimal;
     begin
-        FreightAmount := FreightManagement.CalculateFreight(SalesHeader);
-        FreightManagement.AddFreightLine(SalesHeader, FreightAmount);
+        // FreightAmount := FreightManagement.CalculateFreight(SalesHeader);
+        // FreightManagement.AddFreightLine(SalesHeader, FreightAmount);
     end;
 
 }

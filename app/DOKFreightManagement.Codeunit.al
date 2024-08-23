@@ -6,10 +6,10 @@ codeunit 50006 "DOK Freight Management"
         bypassAPIFunction: Boolean;
         FreightAmount: Decimal;
     begin
-        OnBeforeCalculateFreight(bypassAPIFunction, FreightAmount);
-        if bypassAPIFunction then
-            exit(FreightAmount);
-        FreightAmount := CallAPIFreightCalc(SalesHeader);
+        // OnBeforeCalculateFreight(bypassAPIFunction, FreightAmount);
+        // if bypassAPIFunction then
+        //     exit(FreightAmount);
+        // FreightAmount := CallAPIFreightCalc(SalesHeader);
     end;
 
     procedure AddFreightLine(SalesHeader: Record "Sales Header"; FreightAmount: Decimal)
@@ -17,19 +17,19 @@ codeunit 50006 "DOK Freight Management"
         SalesLine: Record "Sales Line";
         Setup: Record "DOK Setup";
     begin
-        Setup.Get();
-        SalesLine.Init();
-        SalesLine.Validate("Document Type", SalesLine."Document Type"::Order);
-        SalesLine.Validate("Document No.", SalesHeader."No.");
-        SalesLine.Validate("Line No.", 999999);
-        SalesLine.Validate("Type", SalesLine."Type"::Resource);
-        SalesLine.Validate("No.", Setup."Freight No.");
-        SalesLine.Validate(Description, 'Freight');
-        SalesLine.Validate(Quantity, 1);
-        SalesLine.Validate("Unit Price", FreightAmount);
-        SalesLine.Validate("Unit Cost", 0);
-        SalesLine."Tax Group Code" := 'VAT';
-        SalesLine.Insert(true);
+        // Setup.Get();
+        // SalesLine.Init();
+        // SalesLine.Validate("Document Type", SalesLine."Document Type"::Order);
+        // SalesLine.Validate("Document No.", SalesHeader."No.");
+        // SalesLine.Validate("Line No.", 999999);
+        // SalesLine.Validate("Type", SalesLine."Type"::Resource);
+        // SalesLine.Validate("No.", Setup."Freight No.");
+        // SalesLine.Validate(Description, 'Freight');
+        // SalesLine.Validate(Quantity, 1);
+        // SalesLine.Validate("Unit Price", FreightAmount);
+        // SalesLine.Validate("Unit Cost", 0);
+        // SalesLine."Tax Group Code" := 'VAT';
+        // SalesLine.Insert(true);
     end;
 
     local procedure CallAPIFreightCalc(SalesHeader: Record "Sales Header"): Decimal
