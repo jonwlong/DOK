@@ -37,7 +37,6 @@ codeunit 50010 "DOK Test Utilities"
     procedure CreateNoSeries(NoSeriesCode: Code[20])
     var
         NoSeries: Record "No. Series";
-        NoSeriesLine: Record "No. Series Line";
     begin
         NoSeries.Init();
         NoSeries.Code := NoSeriesCode;

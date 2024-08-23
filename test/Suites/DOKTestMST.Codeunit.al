@@ -30,8 +30,8 @@ codeunit 50011 "DOK Test MST"
     procedure CreateNoSeriesForMST()
     var
     begin
-        TestHelpersUtilities.CreateNoSeries('MST');
-        TestHelpersUtilities.CreateNoSeriesLine('MST', '10000', '999999');
+        TestHelpersUtilities.CreateNoSeries('TESTMST');
+        TestHelpersUtilities.CreateNoSeriesLine('TESTMST', '10000', '999999');
     end;
 
     [Test]
