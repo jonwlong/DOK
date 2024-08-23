@@ -2,29 +2,30 @@ codeunit 50011 "DOK Test MST"
 {
     Subtype = Test;
 
-    // local procedure Initialize()
-    // var
-    //     Resource: Record Resource;
-    //     Setup: Record "DOK Setup";
-    //     FreightCode: Code[20];
-    // begin
+    local procedure Initialize()
+    var
+        Resource: Record Resource;
+        Setup: Record "DOK Setup";
+        Utilities: Codeunit "DOK Utilities";
+        FreightCode: Code[20];
+    begin
 
-    //     if Initialized then
-    //         exit;
-    //     Initialized := true;
-    //     FreightCode := Utilities.GetRandomCode20();
-    //     if not Setup.Get() then begin
-    //         Setup.Init();
-    //         Setup."Freight No." := FreightCode;
-    //         Setup.Insert();
-    //     end else begin
-    //         Setup."Freight No." := FreightCode;
-    //         Setup.Modify()
-    //     end;
-    //     TestHelpersUtilities.CreateResource(Resource, FreightCode);
-    //     WorkDate(Today);
+        if Initialized then
+            exit;
+        Initialized := true;
+        FreightCode := Utilities.GetRandomCode20();
+        if not Setup.Get() then begin
+            Setup.Init();
+            Setup."Freight No." := FreightCode;
+            Setup.Insert();
+        end else begin
+            Setup."Freight No." := FreightCode;
+            Setup.Modify()
+        end;
+        TestHelpersUtilities.CreateResource(Resource, FreightCode);
+        WorkDate(Today);
 
-    // end;
+    end;
 
     [Test]
     procedure Test_CreateMSTEntriesForSalesOrder()
@@ -78,4 +79,6 @@ codeunit 50011 "DOK Test MST"
         TestHelpers: Codeunit "DOK Test Helpers";
         TestFixturesSales: Codeunit "DOK Test Fixtures Sales";
         TestFixturesMST: Codeunit "DOK Test Fixtures MST";
+        TestHelpersUtilities: Codeunit "DOK Test Utilities";
+        Initialized: Boolean;
 }
