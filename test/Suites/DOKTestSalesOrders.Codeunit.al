@@ -51,6 +51,7 @@ codeunit 50001 "DOK Test Sales Orders"
 
         // [WHEN] we post the Sales Order
         Commit();
+        SalesPost.ReleaseSalesDocument(SalesHeader);
         PostedWithoutErrors := SalesPost.Run(SalesHeader);
 
         // [THEN] The Sales Order was posted without error

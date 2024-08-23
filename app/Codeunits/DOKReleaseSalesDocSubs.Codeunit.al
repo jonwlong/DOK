@@ -4,8 +4,8 @@ codeunit 50007 "DOK Release Sales Doc Subs"
     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Release Sales Document", OnBeforeReleaseSalesDoc, '', false, false)]
     local procedure "Release Sales Document_OnBeforeReleaseSalesDoc"(var SalesHeader: Record "Sales Header"; PreviewMode: Boolean; var IsHandled: Boolean; var SkipCheckReleaseRestrictions: Boolean; SkipWhseRequestOperations: Boolean)
     begin
-        CheckPackageTrackingNoRequirementOnSalesLines(SalesHeader);
         HandleFreight(SalesHeader);
+        CheckPackageTrackingNoRequirementOnSalesLines(SalesHeader);
         UpdateOriginalOrderQty(SalesHeader);
 
     end;
@@ -35,6 +35,8 @@ codeunit 50007 "DOK Release Sales Doc Subs"
     var
         SalesLine: Record "Sales Line";
     begin
+        if not SalesHeader.HasFreightLine() then
+            exit;
         SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
         SalesLine.SetRange("Document No.", SalesHeader."No.");
         SalesLine.SetRange("Type", SalesLine."Type"::Item);
