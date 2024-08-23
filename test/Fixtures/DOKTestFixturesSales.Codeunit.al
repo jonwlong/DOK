@@ -37,7 +37,7 @@ codeunit 50003 "DOK Test Fixtures Sales"
         SalesLine.Validate(Type, SalesLine.Type::Item);
         SalesLine.Validate("No.", GetRandomItem()."No.");
         SalesLine.Validate(Quantity, Random(100));
-        SalesLine."Package Tracking No." := Utilities.GetRandomText30();
+        // SalesLine."Package Tracking No." := Utilities.GetRandomText30();
         SalesLine."Line No." := LineNo;
         if SalesLine.Quantity = 0 then
             SalesLine.Validate(Quantity, 1);

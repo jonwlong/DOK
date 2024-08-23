@@ -5,7 +5,7 @@ codeunit 50007 "DOK Release Sales Doc Subs"
     local procedure "Release Sales Document_OnBeforeReleaseSalesDoc"(var SalesHeader: Record "Sales Header"; PreviewMode: Boolean; var IsHandled: Boolean; var SkipCheckReleaseRestrictions: Boolean; SkipWhseRequestOperations: Boolean)
     begin
         HandleFreight(SalesHeader);
-        CheckPackageTrackingNoRequirementOnSalesLines(SalesHeader);
+        // CheckPackageTrackingNoRequirementOnSalesLines(SalesHeader);
         UpdateOriginalOrderQty(SalesHeader);
 
     end;
