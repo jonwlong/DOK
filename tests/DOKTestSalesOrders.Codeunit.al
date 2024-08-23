@@ -26,14 +26,12 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesLine.Insert(true);
 
         // [WHEN] we post the Sales Order
-        Commit();
         PostedWithoutErrors := SalesPost.Run(SalesHeader);
 
         // [THEN] the Sales Order is posted without errors
-        TestHelpers.AssertTrue(PostedWithoutErrors, 'Sales Order was not posted without error. %1', GetLastErrorText());
+        if not PostedWithoutErrors then
+            Error('The Sales Order was not posted successfully. Last error: %1', GetLastErrorText());
 
     end;
 
-    var
-        TestHelpers: Codeunit "DOK Test Helpers";
 }
