@@ -184,6 +184,7 @@ codeunit 50001 "DOK Test Sales Orders"
 
         // [WHEN] When we add a new line and post the Sales Order
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
+        SalesPost.ReleaseSalesDocument(SalesHeader);
         SalesPost.Run(SalesHeader);
 
         // [THEN] The Orginal Order Qty. is populated with the same value as the Quantity field for each Sales Invoice Line

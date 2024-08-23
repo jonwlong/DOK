@@ -27,5 +27,10 @@ codeunit 50005 "DOK Utilities"
         exit(CopyStr(DelChr(Format(CreateGuid()), '=', '{}-'), 1, 20));
     end;
 
+    procedure GetRandomCode30(): Code[30]
+    begin
+        exit(CopyStr(DelChr(Format(CreateGuid()), '=', '{}-'), 1, 30));
+    end;
+
 
 }

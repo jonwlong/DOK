@@ -2,13 +2,22 @@ codeunit 50000 "DOK Test Tinker"
 {
     Subtype = Test;
 
-    [Test]
-    procedure Test_First()
+    [TEST]
+    procedure Test_AutoIncrementMetaDataDoesNotGetRolledBack()
+    var
+        newtable: Record "NewTable";
     begin
-        // [GIVEN] Given Some State 
-        // [WHEN] When Some Action 
-        // [THEN] Then Expected Output 
+        // [GIVEN] a new table with a single field (autoincrement = true) that never had a record inserterd into it
+        newtable.init();
+
+        // [WHEN] we insert a record into it
+        newtable.insert();
+
+        // [THEN] the autoincrement field should be 1
+        TestHelpers.AssertTrue(newtable."Entry No." = 1, 'The autoincrement field should be 1 but it''s %1', newtable."Entry No.");
+
     end;
+
 
     [Test]
     procedure Test_AllItemsHaveAUnitPrice()
