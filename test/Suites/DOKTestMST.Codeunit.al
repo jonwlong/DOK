@@ -120,13 +120,13 @@ codeunit 50011 "DOK Test MST"
         // [WHEN] we post the Sales Orders
         MSTSalesHeader.PostShipMSTOrders();
 
-        // [THEN] 4 sales Shipment Headers should have been created.
+        // [THEN] 20 sales Shipment Headers should have been created, One for each MST
         SalesShipmentHeader.SetRange("DOK MST Order No.", MSTSalesHeader."No.");
-        TestHelpers.AssertTrue(SalesShipmentHeader.Count = 20, 'Expected 4 Sales Shipment Headers to be created. Only %1 were created', SalesShipmentHeader.Count);
+        TestHelpers.AssertTrue(SalesShipmentHeader.Count = 20, 'Expected 20 Sales Shipment Headers to be created. Only %1 were created', SalesShipmentHeader.Count);
 
-        // [THEN] 8 shipment lines should have been created
+        // [THEN] 40 shipment lines should have been created, counting the freight line
         SalesShipLine.SetRange("DOK MST Order No.", MSTSalesHeader."No.");
-        TestHelpers.AssertTrue(SalesShipLine.Count = 40, 'Expected 8 Sales Shipment Lines to be created. Only %1 were created', SalesShipLine.Count);
+        TestHelpers.AssertTrue(SalesShipLine.Count = 40, 'Expected 40 Sales Shipment Lines to be created. Only %1 were created', SalesShipLine.Count);
 
     end;
 
@@ -152,9 +152,9 @@ codeunit 50011 "DOK Test MST"
         SalesShipmentHeader.SetRange("DOK MST Order No.", MSTSalesHeader."No.");
         TestHelpers.AssertTrue(SalesShipmentHeader.Count = 10, 'Expected 10 Sales Shipment Headers to be created. %1 were created', SalesShipmentHeader.Count);
 
-        // [THEN] 8 shipment lines should have been created
+        // [THEN] 20 shipment lines should have been created
         SalesShipLine.SetRange("DOK MST Order No.", MSTSalesHeader."No.");
-        TestHelpers.AssertTrue(SalesShipLine.Count = 20, 'Expected 8 Sales Shipment Lines to be created. %1 were created', SalesShipLine.Count);
+        TestHelpers.AssertTrue(SalesShipLine.Count = 20, 'Expected 20 Sales Shipment Lines to be created. %1 were created', SalesShipLine.Count);
 
         // [THEN] 1 sales order of type invoice should have been created
         SalesInvoiceHeader.SetRange("DOK MST Order No.", MSTSalesHeader."No.");
