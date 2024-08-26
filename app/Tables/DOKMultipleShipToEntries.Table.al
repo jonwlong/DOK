@@ -75,7 +75,7 @@ table 50000 "DOK Multiple Ship-to Entries"
     var
         NoSeries: Codeunit "No. series";
     begin
-        Rec."Entry No." := NoSeries.GetNextNo('MST', WorkDate());
+        Rec."Entry No." := NoSeries.GetNextNo('MST', Today);
     end;
 
 }
