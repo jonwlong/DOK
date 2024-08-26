@@ -7,6 +7,25 @@ tableextension 50001 "DOK Sales Header Ext" extends "Sales Header"
         {
             DataClassification = SystemMetadata;
         }
+#pragma warning disable AL0432
+        modify("Package Tracking No.")
+#pragma warning restore AL0432
+        {
+            trigger OnAfterValidate()
+            var
+                SalesLine: Record "Sales Line";
+            begin
+                SalesLine.SetRange("Document Type", SalesLine."Document Type"::Order);
+                SalesLine.SetRange("Document No.", Rec."No.");
+                if SalesLine.FindSet() then
+                    repeat
+#pragma warning disable AL0432
+                        SalesLine."Package Tracking No." := Rec."Package Tracking No.";
+#pragma warning restore AL0432
+                        SalesLine.Modify();
+                    until SalesLine.Next() = 0;
+            end;
+        }
     }
 
     keys

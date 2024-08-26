@@ -4,22 +4,30 @@ pageextension 50000 "DOK Sales Order Ext" extends "Sales Order"
     {
         addafter("F&unctions")
         {
-            action("Post & Ship MST Invoice")
+            action("Generat MST Invoice")
             {
                 ApplicationArea = All;
-                Caption = 'Post & Ship MST Invoice';
+                Caption = 'Generate MST Invoice';
                 Promoted = true;
-                ToolTip = 'Post & Ship MST Invoice';
+                ToolTip = 'Generates MST Invoice';
                 PromotedCategory = Process;
                 Image = Document;
                 trigger OnAction()
                 var
+                    SalesInvoiceHeader: Record "Sales Header";
                     MSTMgt: Codeunit "DOK MST Management";
+                    SalesInvoicePage: Page "Sales Invoice";
                 begin
                     MSTMgt.CreateMockMSTEntries(Rec."No.", 10);
                     MSTMgt.CreateOrdersFromMSTEntries(Rec);
                     MSTMgt.PostShipOrdersCreatedFromMST(Rec);
                     MSTMgt.CreateInvoiceWithCombinedMSTShipments(Rec."No.");
+                    SalesInvoiceHeader.SetRange("DOK MST Order No.", Rec."No.");
+                    SalesInvoiceHeader.SetRange("Document Type", SalesInvoiceHeader."Document Type"::Invoice);
+                    if SalesInvoiceHeader.FindSet() then begin
+                        SalesInvoicePage.SetRecord(SalesInvoiceHeader);
+                        SalesInvoicePage.Run();
+                    end;
                 end;
             }
             action("Show MST Entries")

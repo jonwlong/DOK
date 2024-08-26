@@ -3,39 +3,16 @@ codeunit 50011 "DOK Test MST"
     Subtype = Test;
 
     local procedure Initialize()
-    var
-        Resource: Record Resource;
-        Setup: Record "DOK Setup";
-        FreightCode: Code[20];
     begin
 
         if Initialized then
             exit;
         Initialized := true;
-        FreightCode := Utilities.GetRandomCode20();
-        if not Setup.Get() then begin
-            Setup.Init();
-            Setup."Freight No." := FreightCode;
-            Setup.Insert();
-        end else begin
-            Setup."Freight No." := FreightCode;
-            Setup.Modify()
-        end;
-        TestHelpersUtilities.CreateResource(Resource, FreightCode);
-        WorkDate(Today);
-        TestHelpersUtilities.SetupSalesAndRcvbls();
-        CreateNoSeriesForMST();
 
-    end;
+        TestSetup.CreateFreightResource();
+        TestSetupSingletonVars.SetMSTNoSeriesCode(TestSetup.CreateNoSeries());
+        TestSetup.SetupSalesAndRcvbls();
 
-    procedure CreateNoSeriesForMST()
-    var
-        GeneralSetupSingleton: Codeunit "DOK General Setup Singleton";
-        MSTNoSeriesCode: Code[20];
-    begin
-        MSTNoSeriesCode := GeneralSetupSingleton.GetMSTNoSeriesCode();
-        TestHelpersUtilities.CreateNoSeries(MSTNoSeriesCode);
-        TestHelpersUtilities.CreateNoSeriesLine(MSTNoSeriesCode, '10000', '999999');
     end;
 
     [Test]
@@ -221,12 +198,11 @@ codeunit 50011 "DOK Test MST"
         // [WHEN] We run the action "Post & Ship MST Invoice"
         SalesOrderPage.OpenNew();
         SalesOrderPage.GoToRecord(SalesHeader);
-        SalesOrderPage."Post & Ship MST Invoice".Invoke();
+        SalesOrderPage."Generat MST Invoice".Invoke();
 
         // [THEN] The Sales Invoice is created with MSTOrderNo
         SalesHeader.SetRange("DOK MST Order No.", SalesHeader."No.");
         TestHelpers.AssertTrue(not SalesHeader.IsEmpty, 'Sales Invoice was not posted with MST Order No. %1', SalesHeader."DOK MST Order No.");
-
 
     end;
 
@@ -242,7 +218,7 @@ codeunit 50011 "DOK Test MST"
         TestHelpers: Codeunit "DOK Test Helpers";
         TestFixturesSales: Codeunit "DOK Test Fixtures Sales";
         TestFixturesMST: Codeunit "DOK Test Fixtures MST";
-        TestHelpersUtilities: Codeunit "DOK Test Utilities";
-        Utilities: Codeunit "DOK Utilities";
+        TestSetup: Codeunit "DOK Test Setup";
+        TestSetupSingletonVars: Codeunit "DOK Setup Singleton Vars";
         Initialized: Boolean;
 }

@@ -1,4 +1,4 @@
-codeunit 50016 "DOK General Setup Singleton"
+codeunit 50016 "DOK Setup Singleton Vars"
 {
 
     SingleInstance = true;

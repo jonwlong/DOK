@@ -1,7 +1,27 @@
-codeunit 50010 "DOK Test Utilities"
+codeunit 50017 "DOK Test Setup"
 {
-    procedure CreateResource(var Resource: Record Resource; ResourceNo: Code[20])
+
+    procedure CreateFreightResource(): Code[20]
     var
+        Resource: Record Resource;
+        Setup: Record "DOK Setup";
+        FreightCode: Code[20];
+    begin
+        FreightCode := TestHelperUtilities.GetRandomCode20();
+        if not Setup.Get() then begin
+            Setup.Init();
+            Setup."Freight No." := FreightCode;
+            Setup.Insert();
+        end else begin
+            Setup."Freight No." := FreightCode;
+            Setup.Modify()
+        end;
+        CreateResource(FreightCode);
+    end;
+
+    local procedure CreateResource(ResourceNo: Code[20])
+    var
+        Resource: Record Resource;
         GeneralPostingSetup: Record "General Posting Setup";
         UnitOfMeasure: Record "Unit of Measure";
     begin
@@ -24,27 +44,19 @@ codeunit 50010 "DOK Test Utilities"
         Resource.Modify(true);
     end;
 
-    procedure GetLastPostedSalesInvoice() LastPostedSalesInvoice: Record "Sales Invoice Header"
-    var
-        NoSeriesLine: Record "No. Series Line";
-        SalesReceivablesSetup: Record "Sales & Receivables Setup";
-    begin
-        SalesReceivablesSetup.Get();
-        NoSeriesLine.Get(SalesReceivablesSetup."Posted Invoice Nos.", 10000);
-        LastPostedSalesInvoice.Get(NoSeriesLine."Last No. Used");
-    end;
-
-    procedure CreateNoSeries(NoSeriesCode: Code[20])
+    procedure CreateNoSeries() NoSeriesCode: Code[20]
     var
         NoSeries: Record "No. Series";
     begin
+        NoSeriesCode := TestHelperUtilities.GetRandomCode20();
         NoSeries.Init();
         NoSeries.Code := NoSeriesCode;
         NoSeries."Default Nos." := true;
         NoSeries.Insert(true);
+        CreateNoSeriesLine(NoSeriesCode, '10000', '99999');
     end;
 
-    procedure CreateNoSeriesLine(NoSeriesCode: Code[20]; StartingNo: Code[20]; EndingNo: Code[20]) NoSeriesLine: Record "No. Series Line"
+    local procedure CreateNoSeriesLine(NoSeriesCode: Code[20]; StartingNo: Code[20]; EndingNo: Code[20]) NoSeriesLine: Record "No. Series Line"
     var
     begin
         NoSeriesLine.Init();
@@ -59,16 +71,18 @@ codeunit 50010 "DOK Test Utilities"
     procedure SetupSalesAndRcvbls()
     var
         SalesReceivablesSetup: Record "Sales & Receivables Setup";
-        GeneralSetupSingleton: Codeunit "DOK General Setup Singleton";
-        Utilities: Codeunit "DOK Utilities";
+        SetupSingletonVars: Codeunit "DOK Setup Singleton Vars";
         MSTNoSeriesCode: Code[20];
     begin
-        MSTNoSeriesCode := Utilities.GetRandomCode10();
-        GeneralSetupSingleton.SetMSTNoSeriesCode(MSTNoSeriesCode);
-        GeneralSetupSingleton.GetMSTNoSeriesCode();
+        MSTNoSeriesCode := SetupSingletonVars.GetMSTNoSeriesCode();
+        SetupSingletonVars.SetMSTNoSeriesCode(MSTNoSeriesCode);
+        SetupSingletonVars.GetMSTNoSeriesCode();
         SalesReceivablesSetup.Get();
         SalesReceivablesSetup."DOK MST Entries No." := MSTNoSeriesCode;
         SalesReceivablesSetup.Modify();
     end;
+
+    var
+        TestHelperUtilities: Codeunit "DOK Test Helper Utilities";
 
 }

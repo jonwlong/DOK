@@ -3,34 +3,14 @@ codeunit 50001 "DOK Test Sales Orders"
     Subtype = Test;
 
     local procedure Initialize()
-    var
-        Resource: Record Resource;
-        Setup: Record "DOK Setup";
-        FreightCode: Code[20];
     begin
 
         if Initialized then
             exit;
         Initialized := true;
-        FreightCode := Utilities.GetRandomCode20();
-        if not Setup.Get() then begin
-            Setup.Init();
-            Setup."Freight No." := FreightCode;
-            Setup.Insert();
-        end else begin
-            Setup."Freight No." := FreightCode;
-            Setup.Modify()
-        end;
-        TestHelpersUtilities.CreateResource(Resource, FreightCode);
-        WorkDate(Today);
 
-    end;
+        TestSetup.CreateFreightResource();
 
-    procedure CreateNoSeriesForMST()
-    var
-    begin
-        TestHelpersUtilities.CreateNoSeries('MST');
-        TestHelpersUtilities.CreateNoSeriesLine('MST', '10000', '999999');
     end;
 
     [Test]
@@ -196,7 +176,7 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesPost.Run(SalesHeader);
 
         // [THEN] The Orginal Order Qty. is populated with the same value as the Quantity field for each Sales Invoice Line
-        PostedSalesInvoice := TestHelpersUtilities.GetLastPostedSalesInvoice();
+        PostedSalesInvoice := TestHelperUtilities.GetLastPostedSalesInvoice();
         SalesInvoiceLine.SetRange("Document No.", PostedSalesInvoice."No.");
         SalesInvoiceLine.SetRange(Type, SalesInvoiceLine.Type::Item);
         if SalesInvoiceLine.FindSet() then
@@ -216,7 +196,7 @@ codeunit 50001 "DOK Test Sales Orders"
     var
         TestHelpers: Codeunit "DOK Test Helpers";
         TestFixturesSales: Codeunit "DOK Test Fixtures Sales";
-        TestHelpersUtilities: Codeunit "DOK Test Utilities";
-        Utilities: Codeunit "DOK Utilities";
+        TestHelperUtilities: Codeunit "DOK Test Helper Utilities";
+        TestSetup: Codeunit "DOK Test Setup";
         Initialized: Boolean;
 }

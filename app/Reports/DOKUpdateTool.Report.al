@@ -35,9 +35,9 @@ report 50000 "DOK Update Tool"
             Setup.Modify()
         end;
         CreateResource(Resource, 'FREIGHT');
-        WorkDate(Today);
         CreateNoSeries('MST');
         CreateNoSeriesLine('MST', '0000000001', '9999999999');
+        ModifyMSTNoSeriesOnSalesAndRcvblsSetup();
 
     end;
 
@@ -84,9 +84,17 @@ report 50000 "DOK Update Tool"
         NoSeriesLine."Series Code" := NoSeriesCode;
         NoSeriesLine."Starting No." := StartingNo;
         NoSeriesLine."Ending No." := EndingNo;
-        NoSeriesLine."Starting Date" := Today;
         NoSeriesLine."Increment-by No." := 1;
         if NoSeriesLine.Insert(true) then;
+    end;
+
+    procedure ModifyMSTNoSeriesOnSalesAndRcvblsSetup()
+    var
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+    begin
+        SalesReceivablesSetup.Get();
+        SalesReceivablesSetup."DOK MST Entries No." := 'MST';
+        SalesReceivablesSetup.Modify();
     end;
 
 }
