@@ -23,15 +23,19 @@ codeunit 50011 "DOK Test MST"
         end;
         TestHelpersUtilities.CreateResource(Resource, FreightCode);
         WorkDate(Today);
+        TestHelpersUtilities.SetupSalesAndRcvbls();
         CreateNoSeriesForMST();
 
     end;
 
     procedure CreateNoSeriesForMST()
     var
+        GeneralSetupSingleton: Codeunit "DOK General Setup Singleton";
+        MSTNoSeriesCode: Code[20];
     begin
-        TestHelpersUtilities.CreateNoSeries('TESTMST');
-        TestHelpersUtilities.CreateNoSeriesLine('TESTMST', '10000', '999999');
+        MSTNoSeriesCode := GeneralSetupSingleton.GetMSTNoSeriesCode();
+        TestHelpersUtilities.CreateNoSeries(MSTNoSeriesCode);
+        TestHelpersUtilities.CreateNoSeriesLine(MSTNoSeriesCode, '10000', '999999');
     end;
 
     [Test]

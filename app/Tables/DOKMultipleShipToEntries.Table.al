@@ -73,9 +73,11 @@ table 50000 "DOK Multiple Ship-to Entries"
 
     trigger OnInsert()
     var
+        SalesAndReceivablesSetup: Record "Sales & Receivables Setup";
         NoSeries: Codeunit "No. series";
     begin
-        Rec."Entry No." := NoSeries.GetNextNo('MST', Today);
+        SalesAndReceivablesSetup.Get();
+        Rec."Entry No." := NoSeries.GetNextNo(SalesAndReceivablesSetup."DOK MST Entries No.", 0D);
     end;
 
 }

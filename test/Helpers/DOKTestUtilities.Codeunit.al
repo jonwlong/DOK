@@ -51,10 +51,24 @@ codeunit 50010 "DOK Test Utilities"
         NoSeriesLine."Series Code" := NoSeriesCode;
         NoSeriesLine."Starting No." := StartingNo;
         NoSeriesLine."Ending No." := EndingNo;
-        NoSeriesLine."Starting Date" := Today;
         NoSeriesLine."Increment-by No." := 1;
         NoSeriesLine.Insert(true);
         exit(NoSeriesLine);
+    end;
+
+    procedure SetupSalesAndRcvbls()
+    var
+        SalesReceivablesSetup: Record "Sales & Receivables Setup";
+        GeneralSetupSingleton: Codeunit "DOK General Setup Singleton";
+        Utilities: Codeunit "DOK Utilities";
+        MSTNoSeriesCode: Code[20];
+    begin
+        MSTNoSeriesCode := Utilities.GetRandomCode10();
+        GeneralSetupSingleton.SetMSTNoSeriesCode(MSTNoSeriesCode);
+        GeneralSetupSingleton.GetMSTNoSeriesCode();
+        SalesReceivablesSetup.Get();
+        SalesReceivablesSetup."DOK MST Entries No." := MSTNoSeriesCode;
+        SalesReceivablesSetup.Modify();
     end;
 
 }
