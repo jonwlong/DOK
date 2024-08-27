@@ -34,6 +34,7 @@ codeunit 50011 "DOK Test MST"
         MSTMgt.CreateMockMSTEntries(SalesHeader."No.", 2);
 
         // [THEN] There should be 2 MSTs
+        MST.SetRange("Order No.", SalesHeader."No.");
         TestHelpers.AssertTrue(MST.Count = 2, 'Expected 2 MSTs to be created, but found %1', MST.Count);
 
         // [THEN] The quantity on the Sales Order line MST Quantity field should be greater than zero
@@ -56,7 +57,7 @@ codeunit 50011 "DOK Test MST"
         MSTSalesHeader := TestFixturesMST.CreateMSTSalesOrderWithMSTEntries(1, 2);
 
         // [WHEN] we run the custom MST order creation procedure
-        MSTSalesHeader.CreateOrdersFromMST();
+        MSTSalesHeader.CreateOrdersFromMSTEntries();
 
         // [THEN] 2 Sales Orders should have been created
         SalesHeader.SetRange("DOK MST Order No.", MSTSalesHeader."No.");
@@ -80,7 +81,7 @@ codeunit 50011 "DOK Test MST"
         MSTSalesHeader := TestFixturesMST.CreateMSTSalesOrderReadyToPost(1, 2);
 
         // [WHEN] we post the Sales Orders
-        MSTSalesHeader.PostShipMSTOrders();
+        MSTSalesHeader.PostShipOrdersCreatedFromMST();
 
         // [THEN] 2 Sales Orders should each have all lines shipped
         SalesHeader.SetRange("DOK MST Order No.", MSTSalesHeader."No.");
@@ -110,7 +111,7 @@ codeunit 50011 "DOK Test MST"
         MSTSalesHeader := TestFixturesMST.CreateMSTSalesOrderReadyToPost(2, 10);
 
         // [WHEN] we post the Sales Orders
-        MSTSalesHeader.PostShipMSTOrders();
+        MSTSalesHeader.PostShipOrdersCreatedFromMST();
 
         // [THEN] 4 sales Shipment Headers should have been created.
         SalesShipmentHeader.SetRange("DOK MST Order No.", MSTSalesHeader."No.");

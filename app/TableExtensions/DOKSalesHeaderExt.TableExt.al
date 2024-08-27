@@ -84,20 +84,34 @@ tableextension 50001 "DOK Sales Header Ext" extends "Sales Header"
         exit(FreightLineFound);
     end;
 
+    procedure CreateMockMSTEntries(No: Code[20]; Count: Integer);
+    var
+        MSTManagement: Codeunit "DOK MST Management";
+    begin
+        MSTManagement.CreateMockMSTEntries(No, Count);
+    end;
 
-    procedure CreateOrdersFromMST();
+    procedure CreateOrdersFromMSTEntries();
     var
         MSTManagement: Codeunit "DOK MST Management";
     begin
         MSTManagement.CreateOrdersFromMSTEntries(Rec);
     end;
 
-    procedure PostShipMSTOrders();
+    procedure PostShipOrdersCreatedFromMST();
     var
         MSTManagement: Codeunit "DOK MST Management";
     begin
         MSTManagement.PostShipOrdersCreatedFromMST(Rec);
     end;
+
+    procedure CreateInvoiceWithCombinedMSTShipments() SalesInvoiceHeader: Record "Sales Header";
+    var
+        MSTManagement: Codeunit "DOK MST Management";
+    begin
+        SalesInvoiceHeader := MSTManagement.CreateInvoiceWithCombinedMSTShipments(Rec."No.");
+    end;
+
 
 
 }

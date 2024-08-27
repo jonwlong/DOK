@@ -53,7 +53,7 @@ codeunit 50017 "DOK Test Setup"
         NoSeries.Code := NoSeriesCode;
         NoSeries."Default Nos." := true;
         NoSeries.Insert(true);
-        CreateNoSeriesLine(NoSeriesCode, '10000', '99999');
+        CreateNoSeriesLine(NoSeriesCode, '999999', '9999999');
     end;
 
     local procedure CreateNoSeriesLine(NoSeriesCode: Code[20]; StartingNo: Code[20]; EndingNo: Code[20]) NoSeriesLine: Record "No. Series Line"

@@ -85,9 +85,8 @@ codeunit 50009 "DOK MST Management"
             until SalesHeader.Next() = 0;
     end;
 
-    procedure CreateInvoiceWithCombinedMSTShipments(MSTOrderNo: Text[20])
+    procedure CreateInvoiceWithCombinedMSTShipments(MSTOrderNo: Text[20]) SalesHeader: Record "Sales Header";
     var
-        SalesHeader: Record "Sales Header";
         SalesShipLine: Record "Sales Shipment Line";
         SalesGetShipment: Codeunit "Sales-Get Shipment";
     begin
