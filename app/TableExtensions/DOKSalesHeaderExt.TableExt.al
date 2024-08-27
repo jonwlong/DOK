@@ -84,11 +84,11 @@ tableextension 50001 "DOK Sales Header Ext" extends "Sales Header"
         exit(FreightLineFound);
     end;
 
-    procedure CreateMockMSTEntries(No: Code[20]; Count: Integer);
+    procedure CreateMockMSTEntries(NoOfMSTEntries: Integer);
     var
         MSTManagement: Codeunit "DOK MST Management";
     begin
-        MSTManagement.CreateMockMSTEntries(No, Count);
+        MSTManagement.CreateMockMSTEntries(SalesHeader."No.", NoOfMSTEntries);
     end;
 
     procedure CreateOrdersFromMSTEntries();
