@@ -4,7 +4,7 @@ pageextension 50000 "DOK Sales Order Ext" extends "Sales Order"
     {
         addafter("F&unctions")
         {
-            action("Generat MST Invoice")
+            action("Generate MST Invoice")
             {
                 ApplicationArea = All;
                 Caption = 'Generate MST Invoice';

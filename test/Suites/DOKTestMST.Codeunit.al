@@ -199,7 +199,7 @@ codeunit 50011 "DOK Test MST"
         // [WHEN] We run the action "Post & Ship MST Invoice"
         SalesOrderPage.OpenNew();
         SalesOrderPage.GoToRecord(SalesHeader);
-        SalesOrderPage."Generat MST Invoice".Invoke();
+        SalesOrderPage."Generate MST Invoice".Invoke();
 
         // [THEN] The Sales Invoice is created with MSTOrderNo
         SalesHeader.SetRange("DOK MST Order No.", SalesHeader."No.");
