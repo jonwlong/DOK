@@ -27,7 +27,7 @@ codeunit 50000 "DOK Test Tinker"
         newtable.insert();
 
         // [THEN] the autoincrement field should be 1
-        TestHelpers.AssertTrue(newtable."Entry No." = 1, 'The autoincrement field should be 1 but it''s %1', newtable."Entry No.");
+        TestHelpers.AssertTrue(newtable."Entry No." = 1, '✅ After the first run, an AutoIncrement Field count doesn''t get rolled back. %1', newtable."Entry No.");
 
     end;
 
@@ -39,7 +39,7 @@ codeunit 50000 "DOK Test Tinker"
     begin
         Item.FindSet();
         repeat
-            TestHelpers.AssertTrue(Item."Unit Price" > 0, 'Item ' + Format(Item."No.") + ' has no unit price');
+            TestHelpers.AssertTrue(Item."Unit Price" > 0, '✅ Item ' + Format(Item."No.") + ' has no unit price');
         until Item.Next() = 0;
     end;
 
@@ -55,7 +55,7 @@ codeunit 50000 "DOK Test Tinker"
                 CountOfItemsWithZeroPrice += 1;
         until Item.Next() = 0;
         if CountOfItemsWithZeroPrice > 0 then
-            Error('%1 items of %2 have no unit price', CountOfItemsWithZeroPrice, Item.Count);
+            Error('✅ %1 items of %2 have no unit price', CountOfItemsWithZeroPrice, Item.Count);
     end;
 
     [Test]
@@ -66,7 +66,7 @@ codeunit 50000 "DOK Test Tinker"
     begin
         for i := 1 to 10 do
             tb.AppendLine(Format(Random(100)));
-        Error(tb.ToText());
+        Error('✅ %1', tb.ToText());
     end;
 
     [Test]
@@ -74,7 +74,7 @@ codeunit 50000 "DOK Test Tinker"
     var
         boo: Boolean;
     begin
-        TestHelpers.AssertTrue(boo, 'This is a test with %1', 1);
+        TestHelpers.AssertTrue(boo, '✅ This is a test with %1', 1);
     end;
 
     [Test]
@@ -82,7 +82,7 @@ codeunit 50000 "DOK Test Tinker"
     var
         boo: Boolean;
     begin
-        TestHelpers.AssertTrue(boo, 'This is a test with %1 and %2', '1', '2');
+        TestHelpers.AssertTrue(boo, '✅ This is a test with %1 and %2', '1', '2');
     end;
 
     [Test]
@@ -90,7 +90,7 @@ codeunit 50000 "DOK Test Tinker"
     var
         boo: Boolean;
     begin
-        TestHelpers.AssertTrue(boo, 'This is a test with %1 and %2 and %3', '1', '2', '3');
+        TestHelpers.AssertTrue(boo, '✅ This is a test with %1 and %2 and %3', '1', '2', '3');
     end;
 
     [Test]
@@ -98,7 +98,7 @@ codeunit 50000 "DOK Test Tinker"
     var
         boo: Boolean;
     begin
-        TestHelpers.AssertTrue(boo, 'This is a test with %1 and %2 and %3 and %4', '1', '2', '3', '4');
+        TestHelpers.AssertTrue(boo, '✅ This is a test with %1 and %2 and %3 and %4', '1', '2', '3', '4');
     end;
 
     [Test]
@@ -106,7 +106,7 @@ codeunit 50000 "DOK Test Tinker"
     var
         boo: Boolean;
     begin
-        TestHelpers.AssertTrue(boo, 'This is a test with %1 and %2 and %3 and %4 and %5', '1', '2', '3', '4', '5');
+        TestHelpers.AssertTrue(boo, '✅ This is a test with %1 and %2 and %3 and %4 and %5', '1', '2', '3', '4', '5');
     end;
 
     [Test]
