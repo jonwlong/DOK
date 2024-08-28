@@ -12,6 +12,7 @@ codeunit 50011 "DOK Test MST"
         TestSetup.CreateFreightResource();
         TestSetupSingletonVars.SetMSTNoSeriesCode(TestSetup.CreateNoSeries());
         TestSetup.SetupSalesAndRcvbls();
+        // WorkDate(Today);
 
     end;
 
@@ -197,7 +198,7 @@ codeunit 50011 "DOK Test MST"
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
 
         // [WHEN] We run the action "Post & Ship MST Invoice"
-        SalesOrderPage.OpenNew();
+        SalesOrderPage.OpenVew();
         SalesOrderPage.GoToRecord(SalesHeader);
         SalesOrderPage."Generate MST Invoice".Invoke();
 
@@ -205,14 +206,6 @@ codeunit 50011 "DOK Test MST"
         SalesHeader.SetRange("DOK MST Order No.", SalesHeader."No.");
         TestHelpers.AssertTrue(not SalesHeader.IsEmpty, 'Sales Invoice was not posted with MST Order No. %1', SalesHeader."DOK MST Order No.");
 
-    end;
-
-    //All of your selections were processed
-    [MessageHandler]
-    procedure PostBatchSalesPostingMessageHandler(Message: Text[1024]);
-    begin
-        if Message in ['All of your selections were processed'] then
-            exit;
     end;
 
     var
