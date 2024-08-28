@@ -110,7 +110,7 @@ codeunit 50000 "DOK Test Tinker"
     end;
 
     [Test]
-    procedure Test_TestPage()
+    procedure Test_TestCustomerPage()
     var
         Customer: Record Customer;
         CustomerPage: TestPage "Customer Card";
@@ -125,6 +125,25 @@ codeunit 50000 "DOK Test Tinker"
         // [WHEN] When Some Action 
         // [THEN] Then Expected Output 
     end;
+
+    [TEST]
+    procedure Test_SalesInvoicePage()
+    var
+        SalesInvoiceHeader: Record "Sales Header";
+        SalesInvoicePage: TestPage "Sales Invoice";
+    begin
+        SalesInvoiceHeader.SetRange("Document Type", SalesInvoiceHeader."Document Type"::Invoice);
+        SalesInvoiceHeader.FindFirst();
+        SalesInvoicePage.OpenView();
+        SalesInvoicePage.GoToRecord(SalesInvoiceHeader);
+        // [GIVEN] 
+
+        // [WHEN] 
+
+        // [THEN] 
+
+    end;
+
 
     [TEST]
     procedure Test_NumberSequenceSpeed()
