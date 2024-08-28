@@ -88,7 +88,7 @@ tableextension 50001 "DOK Sales Header Ext" extends "Sales Header"
     var
         MSTManagement: Codeunit "DOK MST Management";
     begin
-        MSTManagement.CreateMockMSTEntries(SalesHeader."No.", NoOfMSTEntries);
+        MSTManagement.CreateMockMSTEntries(Rec."No.", NoOfMSTEntries);
     end;
 
     procedure CreateOrdersFromMSTEntries();
