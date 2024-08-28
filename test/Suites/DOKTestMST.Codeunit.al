@@ -198,7 +198,7 @@ codeunit 50011 "DOK Test MST"
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
 
         // [WHEN] We run the action "Post & Ship MST Invoice"
-        SalesOrderPage.OpenVew();
+        SalesOrderPage.OpenView();
         SalesOrderPage.GoToRecord(SalesHeader);
         SalesOrderPage."Generate MST Invoice".Invoke();
 
