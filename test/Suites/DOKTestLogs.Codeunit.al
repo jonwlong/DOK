@@ -17,7 +17,7 @@ codeunit 50014 "DOK Test Logs"
         SalesHdrInsertLogRunCount.Init();
         SalesHdrInsertLogRunCount.Insert();
         ThisTestRunCount := SalesHdrInsertLogRunCount."Run Count";
-        Error('No of Sales Orders: %1', NoOfSalesHeadersCreated - ThisTestRunCount);
+        Error('✅ No of Sales Orders: %1', NoOfSalesHeadersCreated - ThisTestRunCount);
     end;
 
 
