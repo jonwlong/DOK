@@ -8,10 +8,6 @@ codeunit 50001 "DOK Test Sales Orders"
         Setup: Record "DOK Setup";
         FreightCode: Code[20];
     begin
-
-        if Initialized then
-            exit;
-        Initialized := true;
         FreightCode := CopyStr(TestHelpersUtilities.GetRandomString(20), 1, MaxStrLen(FreightCode));
         if not Setup.Get() then begin
             Setup.Init();
@@ -189,5 +185,4 @@ codeunit 50001 "DOK Test Sales Orders"
         TestHelpers: Codeunit "DOK Test Helpers";
         TestFixturesSales: Codeunit "DOK Test Fixtures Sales";
         TestHelpersUtilities: Codeunit "DOK Test Utilities";
-        Initialized: Boolean;
 }
