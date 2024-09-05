@@ -75,7 +75,7 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesLine.SetRange(Type, SalesLine.Type::Resource);
         SalesLine.SetRange("No.", DOKSetup."Freight No.");
 
-        TestHelpers.AssertTrue(SalesLine.Count = 1, 'Freight Sales Line not found, or too many freight lines found.');
+        TestHelpers.AssertTrue(SalesLine.Count = 1, 'Freight Sales Line not found, or too many freight lines found. Count: %1 Filters: %2', SalesLine.Count, SalesLine.GetFilters());
 
         // [THEN] The Freight line has a Quantity > 0
         SalesLine.FindFirst();
@@ -105,7 +105,7 @@ codeunit 50001 "DOK Test Sales Orders"
         SalesLine.SetRange(Type, SalesLine.Type::Resource);
         SalesLine.SetRange("No.", DOKSetup."Freight No.");
 
-        TestHelpers.AssertTrue(SalesLine.Count = 1, 'Freight Sales Line not found, or too many freight lines found.');
+        TestHelpers.AssertTrue(SalesLine.Count = 1, 'Freight Sales Line not found, or too many freight lines found. Count: %1 Filters: %2', SalesLine.Count, SalesLine.GetFilters());
 
         // [THEN] The Freight line has a Quantity > 0
         SalesLine.FindFirst();
