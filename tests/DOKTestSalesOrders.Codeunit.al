@@ -57,10 +57,9 @@ codeunit 50001 "DOK Test Sales Orders"
     var
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
+        DOKSetup: Record "DOK Setup";
         ReleaseSalesDoc: Codeunit "Release Sales Document";
     begin
-
-
         // [GIVEN] A Sales Order with 1 Sales Line
         SalesHeader := TestFixturesSales.CreateSalesOrder();
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
@@ -69,11 +68,18 @@ codeunit 50001 "DOK Test Sales Orders"
         ReleaseSalesDoc.Run(SalesHeader);
 
         // [THEN] The Sales Header contains a Freight line 
-        TestHelpers.AssertTrue(SalesLine.Get(SalesLine."Document Type"::Order, SalesHeader."No.", 999999), 'Freight Sales Line not found');
+        DOKSetup.Get();
+        SalesLine.Reset();
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetRange(Type, SalesLine.Type::Resource);
+        SalesLine.SetRange("No.", DOKSetup."Freight No.");
+
+        TestHelpers.AssertTrue(SalesLine.Count = 1, 'Freight Sales Line not found, or too many freight lines found.');
 
         // [THEN] The Freight line has a Quantity > 0
+        SalesLine.FindFirst();
         TestHelpers.AssertTrue(SalesLine.Quantity > 0, 'Freight Quantity is not greater than 0');
-
     end;
 
     [Test]
@@ -81,10 +87,9 @@ codeunit 50001 "DOK Test Sales Orders"
     var
         SalesHeader: Record "Sales Header";
         SalesLine: Record "Sales Line";
+        DOKSetup: Record "DOK Setup";
         ReleaseSalesDoc: Codeunit "Release Sales Document";
     begin
-
-
         // [GIVEN] A Sales Order with 10 Sales Lines
         SalesHeader := TestFixturesSales.CreateSalesOrder();
         TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 10);
@@ -93,11 +98,18 @@ codeunit 50001 "DOK Test Sales Orders"
         ReleaseSalesDoc.Run(SalesHeader);
 
         // [THEN] The Sales Header contains a Freight line 
-        TestHelpers.AssertTrue(SalesLine.Get(SalesLine."Document Type"::Order, SalesHeader."No.", 999999), 'Freight Sales Line not found');
+        DOKSetup.Get();
+        SalesLine.Reset();
+        SalesLine.SetRange("Document Type", SalesHeader."Document Type");
+        SalesLine.SetRange("Document No.", SalesHeader."No.");
+        SalesLine.SetRange(Type, SalesLine.Type::Resource);
+        SalesLine.SetRange("No.", DOKSetup."Freight No.");
+
+        TestHelpers.AssertTrue(SalesLine.Count = 1, 'Freight Sales Line not found, or too many freight lines found.');
 
         // [THEN] The Freight line has a Quantity > 0
+        SalesLine.FindFirst();
         TestHelpers.AssertTrue(SalesLine.Quantity > 0, 'Freight Quantity is not greater than 0');
-
     end;
 
     var
