@@ -41,7 +41,6 @@ codeunit 50003 "DOK Test Fixtures Sales"
         SalesLine."Line No." := LineNo;
         if SalesLine.Quantity = 0 then
             SalesLine.Validate(Quantity, 1);
-        SalesLine.Insert(true);
     end;
 
     procedure AddSalesLinesToSalesHeader(SalesHeader: Record "Sales Header"; NumberOfLines: Integer)
