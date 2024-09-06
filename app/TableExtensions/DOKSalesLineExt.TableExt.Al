@@ -12,15 +12,14 @@ tableextension 50100 "DOK Sales Line Ext" extends "Sales Line"
             Editable = false;
         }
         // flowfield to calculate the sum of the quantity of the related DOKMultipleShipToEntries
-        // field(50002; "DOK MST Order Qty."; Decimal)
-        // {
-        //     Caption = 'MST Quantity';
-        //     Editable = false;
-        //     FieldClass = FlowField;
-        //     DecimalPlaces = 0 : 5;
-        //     CalcFormula = sum("DOK Multiple Ship-to Entries".Quantity where("Order No." = field("Document No."), "Line No." = field("Line No.")));
+        field(50002; "DOK MST Order Qty."; Decimal)
+        {
+            Caption = 'MST Quantity';
+            Editable = false;
+            FieldClass = FlowField;
+            DecimalPlaces = 0 : 5;
+            CalcFormula = sum("DOK Multiple Ship-to Entries".Quantity where("Order No." = field("Document No."), "Line No." = field("Line No.")));
 
-        // }
-
+        }
     }
 }
