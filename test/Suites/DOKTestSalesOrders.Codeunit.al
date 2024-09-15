@@ -13,31 +13,63 @@ codeunit 50001 "DOK Test Sales Orders"
 
     end;
 
-    [Test]
-    procedure Test_PostSalesOrder()
+    // First, we delete this since we don't ever test MS code
+    // [Test]
+    // procedure Test_PostSalesOrder()
+    // var
+    //     SalesHeader: Record "Sales Header";
+    //     SalesPost: Codeunit "Sales-Post";
+    //     PostedWithoutErrors: Boolean;
+    // begin
+    //     Initialize();
+
+    //     // [GIVEN] a Sales Order with 1 Sales Line
+    //     SalesHeader := TestFixturesSales.CreateSalesOrder();
+    //     TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
+    //     SalesHeader.Validate(Ship, true);
+    //     SalesHeader.Validate(Invoice, true);
+    //     SalesHeader.Modify(true);
+
+    //     // [WHEN] we post the Sales Order
+    //     Commit();
+    //     SalesPost.ReleaseSalesDocument(SalesHeader);
+    //     PostedWithoutErrors := SalesPost.Run(SalesHeader);
+
+    //     // [THEN] The Sales Order was posted without error
+    //     TestHelpers.AssertTrue(PostedWithoutErrors, 'Sales Order was not posted without error. %1', GetLastErrorText());
+
+    // end;
+
+    // Next, we identify our dependencies
+    // 1: Sales Header
+    // 2: Sales Line
+    // 3: Release Sales Document codeunit
+    // 4: Test Fixtures Sales codeunit
+    // Then we define what we are testing
+    // 1: Calculate Freight on Release
+    // 2: Create a Freight Line on Release
+    // and create our test cases
+    // 1: Our Calculate Freight procedure is getting called OnRelease
+    // 2: Calclate Freight is returning a value > 0
+    // 3: Freight Line is created when you calculate freight
+    // Then we define our assertions
+    // 1: Freight Line exists
+    // 2: Freight Line has Quantity > 0
+    // TestFixtures>SalesHeader>SalesLine>
+
+    [TEST]
+    procedure Test_CalculateFreightIsCalledOnRelease()
     var
-        SalesHeader: Record "Sales Header";
-        SalesPost: Codeunit "Sales-Post";
-        PostedWithoutErrors: Boolean;
+        ReleaseSalesDocument: Codeunit "Release Sales Document";
     begin
-        Initialize();
 
-        // [GIVEN] a Sales Order with 1 Sales Line
-        SalesHeader := TestFixturesSales.CreateSalesOrder();
-        TestFixturesSales.AddSalesLinesToSalesHeader(SalesHeader, 1);
-        SalesHeader.Validate(Ship, true);
-        SalesHeader.Validate(Invoice, true);
-        SalesHeader.Modify(true);
+        // [WHEN]
+        // ReleaseSalesDocument.); 
 
-        // [WHEN] we post the Sales Order
-        Commit();
-        SalesPost.ReleaseSalesDocument(SalesHeader);
-        PostedWithoutErrors := SalesPost.Run(SalesHeader);
-
-        // [THEN] The Sales Order was posted without error
-        TestHelpers.AssertTrue(PostedWithoutErrors, 'Sales Order was not posted without error. %1', GetLastErrorText());
+        // [THEN] 
 
     end;
+
 
     [Test]
     procedure Test_CalculateFreightOnRelease1Line()
