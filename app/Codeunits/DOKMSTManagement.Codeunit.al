@@ -27,7 +27,7 @@ codeunit 50009 "DOK MST Management"
                 MSTEntries."Ship-to Country" := 'US';
                 MSTEntries."Ship-to Phone No." := '333.333.3333';
                 MSTEntries."Ship-to Email" := 'bob@bob.com';
-                MSTEntries.Validate(Quantity, Random(100));
+                MSTEntries.Quantity := Random(100);
                 MSTEntries.Insert(true);
                 NumberOfIterations += 1;
             until NumberOfIterations = NumberOfMSTEntries;

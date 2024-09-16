@@ -6,7 +6,7 @@
             "request": "launch",
             "type": "al",
             "environmentType": "Sandbox",
-            "server": "http://dok242",
+            "server": "http://BC242",
             "serverInstance": "BC",
             "authentication": "UserPassword",
             "breakOnError": "All",
